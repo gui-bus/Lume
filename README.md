@@ -12,7 +12,7 @@
 
   <div align="center">
     <a href="#-visão-geral">Visão Geral</a> •
-    <a href="#️-stack-tecnológica">Stack</a> •
+    <a href="#-stack-tecnológica">Stack</a> •
     <a href="#-arquitetura-do-sistema">Arquitetura</a> •
     <a href="#-funcionalidades-principais">Funcionalidades</a> •
     <a href="#-motores-de-inteligência--ats">Inteligência ATS</a> •
