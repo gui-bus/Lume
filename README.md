@@ -9,17 +9,6 @@
   <p align="center">
     <strong>Sua Plataforma de Engenharia de Carreira, Validação ATS & Exportação de PDF de Alta Performance</strong>
   </p>
-
-  <div align="center">
-    <a href="#-visão-geral">Visão Geral</a> •
-    <a href="#-stack-tecnológica">Stack</a> •
-    <a href="#-arquitetura-do-sistema">Arquitetura</a> •
-    <a href="#-funcionalidades-principais">Funcionalidades</a> •
-    <a href="#-motores-de-inteligência--ats">Inteligência ATS</a> •
-    <a href="#-banco-de-dados--estrutura">Banco de Dados</a> •
-    <a href="#-testes-automatizados-39-testes">Testes (39)</a> •
-    <a href="#-inicialização-local">Como Rodar</a>
-  </div>
 </div>
 
 <br />
