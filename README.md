@@ -1,8 +1,41 @@
-# <p align="center"><img src="./public/LUME_WHITE.svg" alt="LUME Logo" width="200" /></p>
+<div align="center">
+  <br/>
+  <br/>
+  <img src="./public/LUME_WHITE.svg" alt="LUME Logo" width="280" />
 
-<img src="https://github.com/gui-bus/portfolio/blob/master/public/projects/lume.png?raw=true" width="100%" alt="Thumbnail Lume">
+  <br />
+  <br />
 
-<p align="center">
+  <p align="center">
+    <strong>Sua Plataforma de Engenharia de Carreira, Validação ATS & Exportação de PDF de Alta Performance</strong>
+  </p>
+
+  <div align="center">
+    <a href="#-demonstração-online">Demonstração</a> •
+    <a href="#-stack-tecnológica">Stack</a> •
+    <a href="#-arquitetura-do-sistema">Arquitetura</a> •
+    <a href="#-motores-de-inteligência--ats">Inteligência ATS</a> •
+    <a href="#-banco-de-dados">Banco de Dados</a> •
+    <a href="#-testes-automatizados">Testes (39)</a> •
+    <a href="#-inicialização-local">Como Rodar</a>
+  </div>
+</div>
+
+<br />
+
+---
+
+## 🌟 Visão Geral
+
+O **Lume** é um ecossistema completo de gestão e engenharia de carreira desenvolvido para profissionais que buscam conciliar **estética impecável**, **validação técnica por inteligência de dados** e **alta performance**.
+
+Mais do que um simples gerador de currículos, o Lume resolve a principal dor de candidatos em processos seletivos modernos: **passar pelos robôs de triagem automática (ATS - Applicant Tracking Systems)** sem perder o apelo visual e a clareza de suas conquistas profissionais.
+
+---
+
+## 🛠️ Stack Tecnológica
+
+<div align="center">
   <img alt="React" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/React.svg">
   <img alt="NextJS" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/NextJS.svg">
   <img alt="Typescript" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Typescript.svg">
@@ -23,57 +56,168 @@
   <img alt="Cursor" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Cursor.svg">
   <img alt="Gemini" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Gemini.svg">
   <img alt="Windsurf" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Windsurf.svg">
-</p
+</div>
 
 ---
 
-## 📖 Panorama Geral
+## 🏛️ Arquitetura do Sistema
 
-O **Lume** é uma plataforma de engenharia de carreira projetada para profissionais que buscam excelência visual e técnica. Mais do que um simples editor, o Lume resolve a fricção na criação de currículos otimizados para algoritmos (ATS) em uma experiência fluida, integrada e de alta performance.
+O Lume utiliza uma arquitetura reativa moderna em que a edição do formulário sincroniza simultaneamente o visualizador em HTML e a compilação do canvas em PDF:
 
-### 🎯 Diferenciais Estratégicos
+```mermaid
+graph TB
+    subgraph Client ["💻 Frontend Client-Side (Browser)"]
+        UI["🎨 Editor Form (React Hook Form + Zod)"]
+        Preview["👁️ Live Preview (HTML/Tailwind)"]
+        PDF["📄 @react-pdf/renderer (Client Canvas)"]
+        ATS["📊 ATS & Keyword Engine"]
+    end
 
-- **Foco em Conversão (ATS):** Validadores integrados que garantem que seu currículo seja lido corretamente por sistemas de recrutamento.
-- **Preview em Tempo Real:** Edição instantânea com renderização fiel de PDF via motor dedicado.
-- **Experiência Premium:** Interface baseada em micro-interações, View Transitions para troca de temas e tipografia otimizada.
+    subgraph Server ["⚡ Next.js 16 & Server Layer"]
+        Proxy["🛡️ Proxy Middleware (Clerk + next-intl)"]
+        Actions["⚡ Server Actions (resumeActions.ts)"]
+    end
 
----
+    subgraph DB ["🗄️ Camada de Banco de Dados"]
+        Prisma["💎 Prisma ORM"]
+        Postgres[("🐘 PostgreSQL")]
+    end
 
-## ✨ Ecossistema de Funcionalidades
-
-### 🖋️ Editor Inteligente & Real-time
-
-Interface de alta performance focada em UX:
-
-- **Live PDF Rendering:** Visualização instantânea do documento final enquanto você digita.
-- **Drag & Drop Reordering:** Reorganize experiências, formações e projetos com `dnd-kit`.
-- **Smart Spellchecker:** Detector de "verbos fracos" que sugere alternativas de alto impacto.
-- **Perfil Completo:** Suporte a LinkedIn, GitHub e Portfólio pessoal integrados.
-
-### 🤖 Validação & Performance
-
-- **ATS Health Check:** Pontuação baseada em melhores práticas de legibilidade para robôs.
-- **Keyword Matcher:** Analise a compatibilidade do currículo com descrições de vagas.
-- **LinkedIn Parser:** Importação inteligente de dados via PDF do LinkedIn.
-
-### 🌐 Compartilhamento & Link Público
-
-- **Slug Customizado:** Links profissionais e curtos (ex: `lume.dev/seu-nome`).
-- **Analytics:** Acompanhamento de visualizações e downloads em tempo real.
-- **Internacionalização:** Crie versões do seu currículo em Português ou Inglês com um clique.
+    UI -->|Digitando em tempo real| Preview
+    UI -->|Re-renderiza Canvas| PDF
+    UI -->|Calcula Métricas| ATS
+    UI -->|Salvar / Compartilhar| Proxy
+    Proxy --> Actions
+    Actions --> Prisma
+    Prisma --> Postgres
+```
 
 ---
 
-## 🛠️ Deep Dive Tecnológico
+## 🚀 Funcionalidades Principais
 
-### Arquitetura de Frontend
+| Módulo                     | Funcionalidades                                                                               | Detalhes Técnicos                                                                             |
+| :------------------------- | :-------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
+| **📝 Editor Formulário**   | • Abas categorizadas<br/>• Drag & Drop reordering<br/>• Preenchimento dinâmico                | Formulário reativo com `@dnd-kit/sortable` e estado gerenciado com validação Zod.             |
+| **📄 PDF Engine**          | • Preview instantâneo<br/>• Download direto em Blob<br/>• Temas de cores Hex                  | Desenvolvido com `@react-pdf/renderer` sem necessidade de servidor Node para gerar arquivos.  |
+| **🌐 Internacionalização** | • Rotas `/pt` e `/en`<br/>• Versões vinculadas por `groupId`<br/>• Seletor dinâmico           | Suporte completo via `next-intl` com sincronização automática do currículo no idioma correto. |
+| **🔗 Links Públicos**      | • Slugs curtos e amigáveis<br/>• Métricas de `views` e `downloads`<br/>• Layout público limpo | Rotas sob `/share/[id]` com incrementadores assíncronos e controle de sessão por cookie.      |
 
-- **Next.js 16 (App Router):** Server Actions para mutações e gerenciamento de estado eficiente.
-- **React 19:** Utilização de hooks modernos e concorrência para uma UI responsiva.
-- **Framer Motion:** Animações fluidas, transições de passos e troca de temas via View Transitions API.
+---
 
-### Dados & Segurança
+## ⚖️ Motores de Inteligência & ATS
 
-- **Prisma ORM:** Modelagem de dados type-safe e interações robustas com PostgreSQL.
-- **Clerk Auth:** Autenticação de nível empresarial com fluxos de onboarding customizados.
-- **Zod:** Validação rigorosa de dados em tempo real no formulário.
+```mermaid
+flowchart TD
+    A["📥 Dados do Currículo (ResumeData JSON)"] --> B{"📊 Validador ATS"}
+    A --> C{"🔍 Keyword Matcher"}
+    A --> D{"✍️ Analisador de Verbos"}
+
+    B --> B1["Checks de Contato, Resumo, Experiências, Skills e Word Count"]
+    B1 --> B2["💯 Nota ATS (0 a 100) + Dicas de Melhoria"]
+
+    C --> C1["Compara com Descrição da Vaga + Dicionário 80+ Skills"]
+    C1 --> C2["🎯 % de Aderência + Habilidades Ausentes"]
+
+    D --> D1["Detecta Verbos Fracos (ajudei, fiz, mexi)"]
+    D1 --> D2["💡 Sugere Verbos Fortes (Liderei, Desenvolvi, Otimizei)"]
+```
+
+---
+
+## 🗄️ Banco de Dados & Estrutura
+
+O modelo E-R combina a velocidade relacional do PostgreSQL para índices de busca com a flexibilidade do JSON para o conteúdo do currículo:
+
+```mermaid
+erDiagram
+    USER ||--o{ RESUME : "cria e gerencia"
+
+    USER {
+        string id PK "Identificador único do Clerk"
+        string email UK "E-mail do usuário"
+        string name "Nome completo"
+    }
+
+    RESUME {
+        string id PK "UUID v4"
+        string title "Nome do currículo"
+        json content "Estrutura JSON do ResumeData"
+        string locale "Idioma ('pt', 'en')"
+        string colorTheme "Hex da cor temática"
+        int views "Visualizações públicas"
+        int downloads "Downloads de PDF"
+        string userId FK "ID do usuário"
+        string groupId "Agrupador de traduções"
+        string slug UK "Link amigável único"
+    }
+```
+
+> [!NOTE]
+> **Índices de Performance**: O banco inclui a chave composta `@@unique([groupId, locale])` para garantir tradução única por grupo e o índice `@@index([userId])` para garantir resposta em tempo sub-milissegundo no painel do usuário.
+
+---
+
+## 🧪 Testes Automatizados (39 Testes)
+
+O projeto conta com uma cobertura completa dividida em testes unitários e testes End-to-End no navegador:
+
+```mermaid
+flowchart LR
+    subgraph Unit ["🧪 Vitest (24 Testes Unitários)"]
+        U1["ResumeSchema Zod (12 testes)"]
+        U2["ATS Validator (2 testes)"]
+        U3["Keyword Matcher (3 testes)"]
+        U4["Spellchecker (2 testes)"]
+        U5["LanguageSwitcher (2 testes)"]
+        U6["cn() Utility (3 testes)"]
+    end
+
+    subgraph E2E ["🎭 Playwright (15 Testes E2E)"]
+        E1["Clerk Test Mode Auth"]
+        E2["Rotas /pt e /en"]
+        E3["Validação de Formulários"]
+        E4["Inteligência ATS & Matcher"]
+        E5["Backup JSON & PDF Pipeline"]
+    end
+```
+
+### 🚀 Comandos de Execução
+
+```bash
+# Rodar suíte de testes unitários com Vitest
+pnpm test
+
+# Rodar suíte de testes E2E com Playwright
+pnpm test:e2e
+
+# Interface gráfica interativa do Playwright
+pnpm test:e2e:ui
+```
+
+---
+
+## 🏁 Inicialização Local
+
+### 1. Clonar e Instalar
+
+```bash
+git clone https://github.com/gui-bus/Lume.git
+cd Lume
+pnpm install
+```
+
+### 2. Subir Banco de Dados com Docker
+
+```bash
+docker-compose up -d
+pnpm prisma migrate dev
+```
+
+### 3. Rodar Aplicação
+
+```bash
+pnpm dev
+```
+
+Abra [http://localhost:3000](http://localhost:3000) no navegador.
