@@ -47,7 +47,7 @@ Mais do que um simples gerador de currículos, o Lume resolve a principal dor de
   <img alt="React Hook Form" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/React%20Hook%20Form.svg">
   <img alt="Zod" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Zod.svg">
   <img alt="Prisma" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/PrismaORM.svg">
-  <img alt="Postgresql" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Postgresql.svg">
+  <img alt="Postgresql" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/PostgreSQL.svg">
   <img alt="Clerk" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Clerk.svg">
   <img alt="Vercel" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Vercel.svg">
   <img alt="Vitest" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Vitest.svg">
