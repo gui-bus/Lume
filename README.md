@@ -11,12 +11,13 @@
   </p>
 
   <div align="center">
-    <a href="#-demonstração-online">Demonstração</a> •
-    <a href="#-stack-tecnológica">Stack</a> •
+    <a href="#-visão-geral">Visão Geral</a> •
+    <a href="#️-stack-tecnológica">Stack</a> •
     <a href="#-arquitetura-do-sistema">Arquitetura</a> •
+    <a href="#-funcionalidades-principais">Funcionalidades</a> •
     <a href="#-motores-de-inteligência--ats">Inteligência ATS</a> •
-    <a href="#-banco-de-dados">Banco de Dados</a> •
-    <a href="#-testes-automatizados">Testes (39)</a> •
+    <a href="#-banco-de-dados--estrutura">Banco de Dados</a> •
+    <a href="#-testes-automatizados-39-testes">Testes (39)</a> •
     <a href="#-inicialização-local">Como Rodar</a>
   </div>
 </div>
@@ -153,9 +154,6 @@ erDiagram
     }
 ```
 
-> [!NOTE]
-> **Índices de Performance**: O banco inclui a chave composta `@@unique([groupId, locale])` para garantir tradução única por grupo e o índice `@@index([userId])` para garantir resposta em tempo sub-milissegundo no painel do usuário.
-
 ---
 
 ## 🧪 Testes Automatizados (39 Testes)
@@ -221,3 +219,20 @@ pnpm dev
 ```
 
 Abra [http://localhost:3000](http://localhost:3000) no navegador.
+
+---
+
+## 📑 Documentação Técnica Adicional
+
+Para uma imersão profunda em cada módulo da aplicação, consulte a pasta [`/docs`](file:///c:/Users/Guilherme/Desktop/PROJETOS/Lume/docs/README.md):
+
+- 🚀 [**`docs/features.md`**](file:///c:/Users/Guilherme/Desktop/PROJETOS/Lume/docs/features.md): Mapa detalhado de todas as telas e componentes.
+- 🏗️ [**`docs/architecture.md`**](file:///c:/Users/Guilherme/Desktop/PROJETOS/Lume/docs/architecture.md): Especificação do Next.js App Router, middleware e PDF Engine.
+- 🗄️ [**`docs/database.md`**](file:///c:/Users/Guilherme/Desktop/PROJETOS/Lume/docs/database.md): Modelagem física e estratégia de JSON + PostgreSQL.
+- ⚖️ [**`docs/business-rules.md`**](file:///c:/Users/Guilherme/Desktop/PROJETOS/Lume/docs/business-rules.md): Regras de pontuação ATS e dicionário de palavras-chave.
+
+<br />
+
+<div align="center">
+  <sub>Desenvolvido com foco em alta performance e qualidade por <b>Guilherme Bus</b>.</sub>
+</div>
