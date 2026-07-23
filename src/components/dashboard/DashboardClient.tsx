@@ -495,8 +495,12 @@ export function DashboardClient({
   const handleCreateCoverLetter = async () => {
     try {
       const defaultLetter = {
-        title: "Minha Carta de Apresentação",
-        senderName: userName || "",
+        title:
+          activeLocale === "en"
+            ? "My Cover Letter"
+            : "Minha Carta de Apresentação",
+        senderName:
+          userName || (activeLocale === "en" ? "Your Name" : "Seu Nome"),
         senderEmail: userEmail || "",
         senderPhone: resumes[0]?.content?.personalInfo?.phone || "",
         senderLocation: resumes[0]?.content?.personalInfo?.location || "",
