@@ -51,30 +51,30 @@ sequenceDiagram
     participant Page as App Router ([locale]/editor)
     participant FormState as Form State (React Hook Form)
     participant PDFClient as @react-pdf/renderer
-    participant Action as Server Action (saveResume)
+    participant Action as Server Actions (saveResume/saveCoverLetter)
     participant DB as PostgreSQL (Prisma)
 
-    User->>Middleware: Acessa /pt/editor
+    User->>Middleware: Acessa /pt/editor ou /pt/editor/cover-letter
     Middleware->>Middleware: Valida Sessão do Clerk
     Middleware->>Page: Libera Renderização da Página
-    Page-->>User: Retorna EditorView + ResumeForm
+    Page-->>User: Retorna EditorView / CoverLetterEditorClient
 
     loop Edição em Tempo Real
-        User->>FormState: Modifica texto (ex: Nome, Experiência)
+        User->>FormState: Modifica texto (ex: Nome, Conteúdo)
         FormState->>PDFClient: Re-renderiza PDF Canvas no Preview
         PDFClient-->>User: Atualiza visualização gráfica do PDF
     end
 
-    User->>FormState: Clica em "Salvar"
-    FormState->>Action: Invoca saveResume(id, data, title, locale, groupId, slug)
-    Action->>Action: Valida Auth e Sincroniza Usuário no Banco
-    Action->>DB: Executa prisma.resume.upsert()
-    DB-->>Action: Retorna Registro Salvo
-    Action-->>FormState: Confirma Salvamento com Sucesso
+    loop Autosave
+        FormState->>Action: Invoca saveResume() ou saveCoverLetter() via debounce de 2500ms
+        Action->>DB: Executa prisma.resume.upsert() ou prisma.coverLetter.upsert()
+        DB-->>Action: Retorna Registro Salvo
+        Action-->>FormState: Confirma Salvamento com Sucesso
+    end
 
     User->>PDFClient: Clica em "Baixar PDF"
     PDFClient->>User: Dispara Download do Blob .pdf
-    User->>Action: Invoca incrementDownload(id) em background
+    User->>Action: Invoca incrementDownload() em background (apenas currículos)
     Action->>DB: Incrementa contador downloads +1
 ```
 
@@ -88,6 +88,7 @@ graph TD
         EditorView["📝 EditorView Component<br/>(Gerenciador de Abas do Editor)"]
         ResumeForm["📋 ResumeForm Component<br/>(Formulários React Hook Form + Zod)"]
         ResumeView["👁️ ResumeView Component<br/>(Preview & Renderização HTML)"]
+        CoverLetterEditor["✉️ CoverLetterEditorClient Component<br/>(Formulário + Live Preview HTML)"]
         ResumePDF["📄 ResumePDF Component<br/>(@react-pdf/renderer Document)"]
     end
 

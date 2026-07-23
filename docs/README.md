@@ -1,6 +1,6 @@
 # 📚 Central de Documentação Técnica do Lume
 
-Bem-vindo à central de documentação oficial do **Lume**, a plataforma web moderna desenvolvida para criação, validação ATS, otimização de palavras-chave, tradução multi-idiomas e geração de currículos profissionais em PDF.
+Bem-vindo à central de documentação oficial do **Lume**, a plataforma profissional de candidaturas desenvolvida para a criação, validação ATS, otimização de palavras-chave, tradução multi-idiomas de currículos de alta performance, geração de cartas de apresentação personalizadas e elaboração de e-mails para recrutadores.
 
 Esta pasta reúne a especificação detalhada da arquitetura do sistema, o mapa de funcionalidades implementadas, o modelo de banco de dados e todas as regras de negócio e validações que regem o comportamento da aplicação.
 

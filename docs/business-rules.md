@@ -153,3 +153,25 @@ export const LanguageSchema = z.object({
   reading: z.enum(["Básico", "Intermediário", "Avançado", "Fluente", "Nativo"]),
 });
 ```
+
+---
+
+## 5. ✉️ Regras de Geração de Carta de Apresentação
+
+As cartas de apresentação no Lume seguem regras de formatação e nomenclatura estritas para assegurar uma apresentação elegante aos recrutadores:
+
+- **Links de Contato Interativos**: Qualquer URL ou informação de contato do remetente (Email, Telefone, LinkedIn, GitHub e Portfólio) deve ser renderizada com cor de destaque azul (`#3b82f6`) e ser clicável diretamente tanto na visualização HTML quanto no PDF baixado.
+- **Formatação de Nome de Arquivo**: Ao exportar o PDF, o nome do arquivo é automaticamente formatado para maiúsculas, removendo acentos e caracteres especiais, e substituindo espaços por underscores:
+  `CARTA_DE_APRESENTACAO_[NOME_DO_SENDER_EM_MAIUSCULAS].pdf`.
+
+---
+
+## 6. 📧 Lógica de Tom de Voz no Gerador de E-mails
+
+O gerador de e-mails auxilia o candidato a criar mensagens rápidas de candidatura usando três variações de tons de voz predefinidas:
+
+- **Formal**: Mensagem tradicional e polida, ideal para empresas corporativas.
+- **Amigável**: Linguagem moderna, ideal para startups e empresas de tecnologia.
+- **Direto**: Mensagem curta e concisa, focada no tempo do recrutador.
+
+Ambos assunto e conteúdo do e-mail são dinamicamente traduzidos de acordo com a localidade ativa na sessão (português ou inglês) e suportam preenchimento com fallback para cargos/empresas indefinidos.

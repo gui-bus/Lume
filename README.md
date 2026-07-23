@@ -8,9 +8,9 @@
 
 ## 🌟 Visão Geral
 
-O **Lume** é um criador de currículos profissional desenvolvido para ajudar candidatos a criar, gerenciar e exportar seus currículos de forma simplificada, combinando um design moderno e limpo com uma estrutura organizada.
+O **Lume** é uma plataforma profissional de candidaturas desenvolvida para ajudar candidatos a criar, gerenciar e otimizar todo o seu ecossistema de apresentação profissional (currículos de alta performance, cartas de apresentação elegantes e mensagens de e-mail personalizadas para recrutadores).
 
-A plataforma permite estruturar informações de forma clara, otimizar a visualização das experiências profissionais, gerenciar tags para organização e exportar o documento final diretamente para PDF de alta qualidade, com suporte a múltiplos idiomas.
+A plataforma permite estruturar informações de forma clara, validar currículos contra leitores ATS, organizar documentos por tags, e exportar currículos e cartas diretamente para PDF de alta qualidade com suporte total a múltiplos idiomas.
 
 ## 🛠️ Stack Tecnológica
 
@@ -78,12 +78,14 @@ graph TB
 
 ## 🚀 Funcionalidades Principais
 
-| Módulo                     | Funcionalidades                                                                                             | Detalhes Técnicos                                                                                                       |
-| :------------------------- | :---------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------- |
-| **📝 Editor Formulário**   | • Abas categorizadas<br/>• Drag & Drop reordering<br/>• Preenchimento dinâmico                              | Formulário reativo com `@dnd-kit/sortable` e estado gerenciado com validação Zod.                                       |
-| **📄 PDF Engine**          | • Preview instantâneo<br/>• Download direto em Blob<br/>• Temas de cores Hex<br/>• Modelos Clássico/Moderno | Desenvolvido com `@react-pdf/renderer` com suporte a múltiplos templates (1 e 2 colunas) sincronizados entre Web e PDF. |
-| **🌐 Internacionalização** | • Rotas `/pt` e `/en`<br/>• Versões vinculadas por `groupId`<br/>• Seletor dinâmico                         | Suporte completo via `next-intl` com sincronização automática do currículo no idioma correto.                           |
-| **🔗 Links Públicos**      | • Slugs curtos e amigáveis<br/>• Métricas de `views` e `downloads`<br/>• Layout público limpo               | Rotas sob `/share/[id]` com incrementadores assíncronos e controle de sessão por cookie.                                |
+| Módulo                       | Funcionalidades                                                                                             | Detalhes Técnicos                                                                                                       |
+| :--------------------------- | :---------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------- |
+| **📝 Editor de Currículo**   | • Abas categorizadas<br/>• Drag & Drop reordering<br/>• Preenchimento dinâmico                              | Formulário reativo com `@dnd-kit/sortable` e estado gerenciado com validação Zod.                                       |
+| **✉️ Carta de Apresentação** | • Editor dedicado integrado<br/>• Visualização HTML em tempo real<br/>• Mesmo estilo de cabeçalho e cor     | Geração de PDF vetorial de página única via `@react-pdf/renderer` com links clicáveis e padrão de nomenclatura limpo.   |
+| **📧 Mensagem para E-mail**  | • Assistente de escrita em segundos<br/>• Três opções de tom de voz<br/>• Links `mailto` e cópia rápida     | Integração nativa de modelos dinâmicos de texto dependentes do idioma selecionado no frontend.                          |
+| **📄 PDF Engine**            | • Preview instantâneo<br/>• Download direto em Blob<br/>• Temas de cores Hex<br/>• Modelos Clássico/Moderno | Desenvolvido com `@react-pdf/renderer` com suporte a múltiplos templates (1 e 2 colunas) sincronizados entre Web e PDF. |
+| **🌐 Internacionalização**   | • Rotas `/pt` e `/en`<br/>• Versões vinculadas por `groupId`<br/>• Seletor dinâmico                         | Suporte completo via `next-intl` com sincronização automática do currículo no idioma correto.                           |
+| **🔗 Links Públicos**        | • Slugs curtos e amigáveis<br/>• Métricas de `views` e `downloads`<br/>• Layout público limpo               | Rotas sob `/share/[id]` com incrementadores assíncronos e controle de sessão por cookie.                                |
 
 ---
 

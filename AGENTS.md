@@ -6,7 +6,7 @@ Este arquivo estabelece a visão geral, convenções de desenvolvimento e regras
 
 ## 📌 Visão Geral do Projeto
 
-O **Lume** é uma aplicação web de alta performance focada no gerenciamento, criação e compartilhamento de currículos profissionais com otimização para ATS (Applicant Tracking System), análise de compatibilidade de vagas e exportação/preview em tempo real em formato PDF com internacionalização (i18n).
+O **Lume** é uma aplicação web de alta performance focada no gerenciamento, criação e compartilhamento de currículos profissionais, cartas de apresentação personalizadas e mensagens de e-mail para recrutadores, incluindo otimização para ATS (Applicant Tracking System), análise de compatibilidade de vagas e exportação/preview em tempo real em formato PDF com internacionalização (i18n).
 
 ---
 
@@ -33,7 +33,7 @@ O **Lume** é uma aplicação web de alta performance focada no gerenciamento, c
 2. **Validação Obrigatória via Schema Zod**:
    - Todas as operações com dados de currículo devem respeitar rigorosamente o `ResumeSchema` localizado em `src/lib/validations/resume-schema.ts`.
 3. **Padrão de Mutações de Dados**:
-   - Utilize exclusivamente **Next.js Server Actions** (`src/app/actions/resumeActions.ts`) para lidar com persistência de dados.
+   - Utilize exclusivamente **Next.js Server Actions** (`src/app/actions/resumeActions.ts` e `src/app/actions/coverLetterActions.ts`) para lidar com persistência de dados.
 4. **Commits Convencionais**:
    - Todos os commits devem seguir o padrão Conventional Commits (ex: `feat: ...`, `fix: ...`, `docs: ...`).
 5. **Internacionalização Obrigatória**:

@@ -68,13 +68,36 @@ O Lume é uma aplicação totalmente funcional (Production-Ready) com persistên
 
 ---
 
-### 6. 🔐 Autenticação, Persistência & Dashboard
+### 6. 🔐 Autenticação, Persistência & Dashboard Centralizado de Candidaturas
 
-- **Tecnologias**: Clerk Auth (`@clerk/nextjs`) + Server Actions (`src/app/actions/resumeActions.ts`) + PostgreSQL via Prisma
+- **Tecnologias**: Clerk Auth (`@clerk/nextjs`) + Server Actions (`src/app/actions/resumeActions.ts` & `src/app/actions/coverLetterActions.ts`) + PostgreSQL via Prisma
 - **Capacidades**:
   - Login social (Google/GitHub) e gerenciamento de conta via `UserButton` do Clerk.
   - Sincronização automática do usuário Clerk com a tabela `User` do PostgreSQL.
-  - Dashboard para listar (`listUserResumes`), editar e excluir (`deleteResume`) currículos criados.
+  - Dashboard centralizado contendo navegação em abas persistida via URL (usando `nuqs` para gerenciar o parâmetro `?tab=resumes|coverLetters|emails`).
+  - Filtro unificado de pesquisa por texto, idioma (Português/Inglês) e tags associadas.
+  - Listagem, edição, duplicação e exclusão integrada para currículos e cartas de apresentação.
+
+---
+
+### 7. ✉️ Editor Dedicado de Carta de Apresentação
+
+- **Componente Principal**: `src/components/cover-letter/CoverLetterEditorClient.tsx`
+- **Capacidades**:
+  - Painel de edição com dados de Remetente (incluindo site/portfólio pessoal), Destinatário (nome do recrutador, cargo e empresa) e Conteúdo.
+  - Live Preview HTML responsivo renderizando em tempo real com links clicáveis azuis.
+  - Download em PDF vetorial de página única ([CoverLetterPDF.tsx](file:///c:/Users/Guilherme/Desktop/PROJETOS/Lume/src/components/pdf/CoverLetterPDF.tsx)) com os mesmos padrões de nomenclatura e regras do currículo.
+  - Salvamento automático integrado via debounce de 2500ms.
+
+---
+
+### 8. 📧 Gerador Inteligente de E-mails de Apresentação
+
+- **Componente Principal**: `src/components/email/EmailGeneratorClient.tsx`
+- **Capacidades**:
+  - Assistente para redação rápida de mensagens com base no cargo, empresa, recrutador e competências chaves.
+  - Seletor de tom de voz (Formal, Amigável ou Direto) com variação e tradução dinâmica de conteúdo e linha de assunto de acordo com o idioma ativo.
+  - Ações rápidas de cópia com um clique para a linha de assunto e o corpo do e-mail, e botão para envio automático (`mailto:` link).
 
 ---
 
@@ -85,11 +108,17 @@ graph TD
     subgraph EditorFeature["📝 Módulo do Editor"]
         EditorView["src/components/editor/EditorView.tsx"]
         ResumeForm["src/components/editor/ResumeForm.tsx"]
+        CoverLetterEditor["src/components/cover-letter/CoverLetterEditorClient.tsx"]
     end
 
     subgraph PDFFeature["📄 Módulo de PDF"]
         ResumePDF["src/components/pdf/ResumePDF.tsx"]
         ResumeView["src/components/preview/ResumeView.tsx"]
+        CoverLetterPDF["src/components/pdf/CoverLetterPDF.tsx"]
+    end
+
+    subgraph EmailFeature["📧 Módulo de E-mail"]
+        EmailGen["src/components/email/EmailGeneratorClient.tsx"]
     end
 
     subgraph IntelligenceFeature["📊 Inteligência & ATS"]
@@ -100,16 +129,21 @@ graph TD
     end
 
     subgraph ServerFeature["⚡ Servidor & Banco"]
-        Actions["src/app/actions/resumeActions.ts"]
+        ResumeActions["src/app/actions/resumeActions.ts"]
+        CoverLetterActions["src/app/actions/coverLetterActions.ts"]
         Schema["prisma/schema.prisma"]
     end
 
     EditorView --> ResumeForm
     EditorView --> ResumePDF
+    CoverLetterEditor --> CoverLetterPDF
     EditorView --> ATSVal
     EditorView --> KeywordMatch
     EditorView --> Spellcheck
     EditorView --> LinkedInParse
-    EditorView --> Actions
-    Actions --> Schema
+    EditorView --> ResumeActions
+    CoverLetterEditor --> CoverLetterActions
+    EmailGen --> CoverLetterActions
+    ResumeActions --> Schema
+    CoverLetterActions --> Schema
 ```

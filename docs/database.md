@@ -29,6 +29,10 @@ Decidimos utilizar o **PostgreSQL** através do **Prisma ORM**, combinando o mel
 ```mermaid
 erDiagram
     USER ||--o{ RESUME : "cria e gerencia"
+    USER ||--o{ COVER_LETTER : "cria e gerencia"
+    USER ||--o{ TAG : "possui"
+    RESUME }o--o{ TAG : "rotulado com"
+    COVER_LETTER }o--o{ TAG : "rotulado com"
 
     USER {
         string id PK "Identificador único do Clerk (ex: user_2t...)"
@@ -56,6 +60,40 @@ erDiagram
         string slug UK "Identificador único para URL pública amigável"
         datetime createdAt "Data e hora de criação"
         datetime updatedAt "Data e hora de atualização automática"
+    }
+
+    COVER_LETTER {
+        string id PK "UUID v4"
+        string title "Título interno da carta"
+        string senderName "Nome do remetente"
+        string senderEmail "E-mail do remetente"
+        string senderPhone "Telefone do remetente"
+        string senderLocation "Localização do remetente"
+        string senderLinkedin "LinkedIn do remetente"
+        string senderGithub "GitHub do remetente"
+        string senderPortfolio "Portfólio do remetente"
+        string recipientName "Nome do destinatário"
+        string recipientCompany "Empresa do destinatário"
+        string recipientTitle "Título do destinatário"
+        string recipientAddress "Endereço do destinatário"
+        string date "Data por extenso"
+        string subject "Assunto da carta"
+        string content "Conteúdo da carta"
+        string colorTheme "Cor temática"
+        string templateId "Modelo de template"
+        string locale "Idioma ('pt', 'en')"
+        string groupId "Identificador de grupo de tradução"
+        string userId FK "Chave estrangeira do usuário"
+        string[] tagsOrder "Ordem das tags"
+        datetime createdAt "Data de criação"
+        datetime updatedAt "Data de atualização"
+    }
+
+    TAG {
+        string id PK "UUID v4"
+        string name "Nome da tag"
+        string color "Cor hexadecimal da tag"
+        string userId FK "Proprietário da tag"
     }
 ```
 
