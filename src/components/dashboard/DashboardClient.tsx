@@ -380,7 +380,7 @@ export function DashboardClient({
 
   return (
     <div className="flex-1 w-full min-h-screen bg-background text-foreground flex flex-col">
-      <header className="w-full border-b border-border/40 bg-card/30 backdrop-blur-md sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
+      <header className="w-full border-b border-border/40 bg-card/30 backdrop-blur-md  z-40 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Logo width={100} height={26} />
         </div>

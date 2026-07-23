@@ -170,16 +170,6 @@ export async function listUserResumes(
 
   const whereClause: any = { userId };
 
-  if (search) {
-    whereClause.OR = [
-      { title: { contains: search, mode: "insensitive" } },
-      { content: { path: ["personalInfo", "name"], string_contains: search } },
-      {
-        content: { path: ["personalInfo", "summary"], string_contains: search },
-      },
-    ];
-  }
-
   if (localeFilter) {
     whereClause.locale = localeFilter;
   }
@@ -200,8 +190,24 @@ export async function listUserResumes(
     orderBy: { updatedAt: sort === "asc" ? "asc" : "desc" },
   });
 
+  let filteredResumes = resumes;
+  if (search) {
+    const searchLower = search.toLowerCase();
+    filteredResumes = resumes.filter((r) => {
+      const titleMatches = r.title.toLowerCase().includes(searchLower);
+      const content = r.content as any;
+      const nameMatches = content?.personalInfo?.name
+        ?.toLowerCase()
+        ?.includes(searchLower);
+      const summaryMatches = content?.personalInfo?.summary
+        ?.toLowerCase()
+        ?.includes(searchLower);
+      return titleMatches || nameMatches || summaryMatches;
+    });
+  }
+
   const uniqueGroups = new Map<string, (typeof resumes)[0]>();
-  resumes.forEach((r) => {
+  filteredResumes.forEach((r) => {
     if (r.groupId && !uniqueGroups.has(r.groupId)) {
       uniqueGroups.set(r.groupId, r);
     }

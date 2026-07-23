@@ -190,7 +190,7 @@ export function ResumeForm({
     useFormHistory<ResumeData>(initialData);
 
   const watchedData = watch();
-  const debouncedData = useDebounce(watchedData, 500);
+  const debouncedData = useDebounce(watchedData, 2500);
 
   const completionPercentage = useMemo(() => {
     let score = 15;
