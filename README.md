@@ -12,6 +12,11 @@ O **Lume** é uma plataforma profissional de candidaturas desenvolvida para ajud
 
 A plataforma permite estruturar informações de forma clara, validar currículos contra leitores ATS, organizar documentos por tags, e exportar currículos e cartas diretamente para PDF de alta qualidade com suporte total a múltiplos idiomas.
 
+## 🚀 Deploy & Demonstração
+
+O projeto está implantado e pronto para uso em produção no seguinte endereço:
+👉 **[https://lume.guibus.dev/](https://lume.guibus.dev/)**
+
 ## 🛠️ Stack Tecnológica
 
 <div align="center">
