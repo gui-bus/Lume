@@ -1,4 +1,5 @@
 import { listUserResumes, getUserTags } from "@/app/actions/resumeActions";
+import { listUserCoverLetters } from "@/app/actions/coverLetterActions";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
@@ -17,6 +18,7 @@ export default async function DashboardPage({
   }
 
   const userResumes = await listUserResumes();
+  const userCoverLetters = await listUserCoverLetters();
   const userTags = await getUserTags();
 
   const serializedResumes = userResumes.map((r) => ({
@@ -48,9 +50,39 @@ export default async function DashboardPage({
     color: t.color,
   }));
 
+  const serializedCoverLetters = userCoverLetters.map((l) => ({
+    id: l.id,
+    title: l.title,
+    senderName: l.senderName,
+    senderEmail: l.senderEmail,
+    senderPhone: l.senderPhone,
+    senderLocation: l.senderLocation,
+    senderLinkedin: l.senderLinkedin,
+    senderGithub: l.senderGithub,
+    senderPortfolio: l.senderPortfolio,
+    recipientName: l.recipientName,
+    recipientCompany: l.recipientCompany,
+    recipientTitle: l.recipientTitle,
+    recipientAddress: l.recipientAddress,
+    date: l.date,
+    subject: l.subject,
+    content: l.content,
+    colorTheme: l.colorTheme,
+    templateId: l.templateId,
+    groupId: l.groupId,
+    locale: l.locale,
+    updatedAt: l.updatedAt,
+    tags: l.tags.map((t) => ({
+      id: t.id,
+      name: t.name,
+      color: t.color,
+    })),
+  }));
+
   return (
     <DashboardClient
       initialResumes={serializedResumes as any}
+      initialCoverLetters={serializedCoverLetters}
       allUserTags={serializedTags}
       userEmail={user.emailAddresses[0].emailAddress}
       userName={`${user.firstName || ""} ${user.lastName || ""}`.trim()}

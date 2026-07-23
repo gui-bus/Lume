@@ -26,6 +26,7 @@ import {
   Download,
   Info,
   QrCode,
+  EnvelopeSimpleOpen,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,6 +57,13 @@ import {
   detachTagFromResume,
   updateTagsOrder,
 } from "@/app/actions/resumeActions";
+import {
+  deleteCoverLetter,
+  duplicateCoverLetter,
+  saveCoverLetter,
+  attachTagToCoverLetter,
+  detachTagFromCoverLetter,
+} from "@/app/actions/coverLetterActions";
 import { toast } from "sonner";
 import { Logo } from "@/components/ui/Logo";
 
@@ -88,6 +96,7 @@ interface ResumeCardData {
 
 interface DashboardClientProps {
   initialResumes: ResumeCardData[];
+  initialCoverLetters: any[];
   allUserTags: Tag[];
   userEmail: string;
   userName: string;
@@ -95,6 +104,7 @@ interface DashboardClientProps {
 
 export function DashboardClient({
   initialResumes,
+  initialCoverLetters,
   allUserTags,
   userEmail,
   userName,
@@ -105,7 +115,13 @@ export function DashboardClient({
   const { theme, setTheme } = useTheme();
   const [isPending, startTransition] = useTransition();
 
+  const [activeTabParam, setActiveTabParam] = useQueryState("tab");
+  const activeTab = activeTabParam || "resumes";
+  const setActiveTab = (tab: "resumes" | "coverLetters" | "emails") => {
+    setActiveTabParam(tab);
+  };
   const [resumes, setResumes] = useState<ResumeCardData[]>(initialResumes);
+  const [coverLetters, setCoverLetters] = useState<any[]>(initialCoverLetters);
   const [search, setSearch] = useState("");
   const [localeFilter, setLocaleFilter] = useState("all");
   const [tagFilter, setTagFilter] = useState("all");
@@ -299,9 +315,9 @@ export function DashboardClient({
     }
   };
 
-  const openTagsSettings = (resume: ResumeCardData) => {
-    setSelectedResume(resume);
-    setSelectedResumeIdParam(resume.id);
+  const openTagsSettings = (item: any) => {
+    setSelectedResume(item);
+    setSelectedResumeIdParam(item.id);
     setIsTagsOpenParam(true);
   };
 
@@ -315,23 +331,69 @@ export function DashboardClient({
     if (!selectedResume || !newTagName.trim()) return;
 
     try {
-      const tag = await attachTagToResume(
-        selectedResume.id,
-        newTagName,
-        newTagColor,
+      const isCoverLetter = coverLetters.some(
+        (c) => c.id === selectedResume.id,
       );
 
-      setResumes((prev) =>
-        prev.map((r) => {
-          if (r.id === selectedResume.id) {
-            const hasTag = r.tags.some((t) => t.id === tag.id);
-            if (!hasTag) {
-              return { ...r, tags: [...r.tags, tag] };
+      if (isCoverLetter) {
+        const tag = await attachTagToCoverLetter(
+          selectedResume.id,
+          newTagName,
+          newTagColor,
+        );
+
+        setCoverLetters((prev) =>
+          prev.map((c) => {
+            if (c.id === selectedResume.id) {
+              const currentTags = c.tags || [];
+              const hasTag = currentTags.some((t: any) => t.id === tag.id);
+              if (!hasTag) {
+                return { ...c, tags: [...currentTags, tag] };
+              }
             }
+            return c;
+          }),
+        );
+
+        setSelectedResume((prev: any) => {
+          if (!prev) return null;
+          const currentTags = prev.tags || [];
+          const hasTag = currentTags.some((t: any) => t.id === tag.id);
+          if (!hasTag) {
+            return { ...prev, tags: [...currentTags, tag] };
           }
-          return r;
-        }),
-      );
+          return prev;
+        });
+      } else {
+        const tag = await attachTagToResume(
+          selectedResume.id,
+          newTagName,
+          newTagColor,
+        );
+
+        setResumes((prev) =>
+          prev.map((r) => {
+            if (r.id === selectedResume.id) {
+              const currentTags = r.tags || [];
+              const hasTag = currentTags.some((t: any) => t.id === tag.id);
+              if (!hasTag) {
+                return { ...r, tags: [...currentTags, tag] };
+              }
+            }
+            return r;
+          }),
+        );
+
+        setSelectedResume((prev: any) => {
+          if (!prev) return null;
+          const currentTags = prev.tags || [];
+          const hasTag = currentTags.some((t: any) => t.id === tag.id);
+          if (!hasTag) {
+            return { ...prev, tags: [...currentTags, tag] };
+          }
+          return prev;
+        });
+      }
 
       setNewTagName("");
       toast.success(t("dashboard.toasts.tagAddSuccess"));
@@ -344,16 +406,59 @@ export function DashboardClient({
     if (!selectedResume) return;
 
     try {
-      await detachTagFromResume(selectedResume.id, tagId);
-
-      setResumes((prev) =>
-        prev.map((r) => {
-          if (r.id === selectedResume.id) {
-            return { ...r, tags: r.tags.filter((t) => t.id !== tagId) };
-          }
-          return r;
-        }),
+      const isCoverLetter = coverLetters.some(
+        (c) => c.id === selectedResume.id,
       );
+
+      if (isCoverLetter) {
+        await detachTagFromCoverLetter(selectedResume.id, tagId);
+
+        setCoverLetters((prev) =>
+          prev.map((c) => {
+            if (c.id === selectedResume.id) {
+              const currentTags = c.tags || [];
+              return {
+                ...c,
+                tags: currentTags.filter((t: any) => t.id !== tagId),
+              };
+            }
+            return c;
+          }),
+        );
+
+        setSelectedResume((prev: any) => {
+          if (!prev) return null;
+          const currentTags = prev.tags || [];
+          return {
+            ...prev,
+            tags: currentTags.filter((t: any) => t.id !== tagId),
+          };
+        });
+      } else {
+        await detachTagFromResume(selectedResume.id, tagId);
+
+        setResumes((prev) =>
+          prev.map((r) => {
+            if (r.id === selectedResume.id) {
+              const currentTags = r.tags || [];
+              return {
+                ...r,
+                tags: currentTags.filter((t: any) => t.id !== tagId),
+              };
+            }
+            return r;
+          }),
+        );
+
+        setSelectedResume((prev: any) => {
+          if (!prev) return null;
+          const currentTags = prev.tags || [];
+          return {
+            ...prev,
+            tags: currentTags.filter((t: any) => t.id !== tagId),
+          };
+        });
+      }
 
       toast.success(t("dashboard.toasts.tagRemoveSuccess"));
     } catch (err: any) {
@@ -377,6 +482,108 @@ export function DashboardClient({
       const timeB = new Date(b.updatedAt).getTime();
       return sortBy === "desc" ? timeB - timeA : timeA - timeB;
     });
+
+  const filteredCoverLetters = coverLetters.filter((letter) => {
+    const matchesSearch = letter.title
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    const matchesLocale =
+      localeFilter === "all" || letter.locale === localeFilter;
+    return matchesSearch && matchesLocale;
+  });
+
+  const handleCreateCoverLetter = async () => {
+    try {
+      const defaultLetter = {
+        title: "Minha Carta de Apresentação",
+        senderName: userName || "",
+        senderEmail: userEmail || "",
+        senderPhone: resumes[0]?.content?.personalInfo?.phone || "",
+        senderLocation: resumes[0]?.content?.personalInfo?.location || "",
+        senderLinkedin: resumes[0]?.content?.personalInfo?.linkedin || "",
+        senderGithub: resumes[0]?.content?.personalInfo?.github || "",
+        senderPortfolio: resumes[0]?.content?.personalInfo?.website || "",
+        recipientName: "",
+        recipientCompany: "",
+        date: new Date().toLocaleDateString(
+          activeLocale === "en" ? "en-US" : "pt-BR",
+          {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          },
+        ),
+        subject: "",
+        content: "Escreva o conteúdo da sua carta de apresentação aqui...",
+        colorTheme: "#3b82f6",
+        templateId: "modern",
+      };
+
+      const result = await saveCoverLetter(
+        undefined,
+        defaultLetter,
+        activeLocale,
+      );
+      router.push(`/${activeLocale}/editor/cover-letter/${result.id}`);
+    } catch (err) {
+      toast.error(t("dashboard.toasts.createCoverLetterError"));
+    }
+  };
+
+  const handleDeleteCoverLetter = async (id: string) => {
+    try {
+      await deleteCoverLetter(id);
+      setCoverLetters((prev) => prev.filter((l) => l.id !== id));
+      toast.success(t("dashboard.toasts.deleteCoverLetterSuccess"));
+    } catch (err) {
+      toast.error(t("dashboard.toasts.deleteCoverLetterError"));
+    }
+  };
+
+  const handleDuplicateCoverLetter = async (id: string) => {
+    try {
+      const copy = await duplicateCoverLetter(id);
+      setCoverLetters((prev) => [copy, ...prev]);
+      toast.success(t("dashboard.toasts.duplicateCoverLetterSuccess"));
+    } catch (err) {
+      toast.error(t("dashboard.toasts.duplicateCoverLetterError"));
+    }
+  };
+
+  const handleDownloadCoverLetter = async (letter: any) => {
+    try {
+      const { pdf } = await import("@react-pdf/renderer");
+      const { CoverLetterPDF } =
+        await import("@/components/pdf/CoverLetterPDF");
+
+      const formatNameForFilename = (name: string) => {
+        if (!name) return "";
+        return name
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toUpperCase()
+          .replace(/[^A-Z0-9\s]/g, "")
+          .trim()
+          .replace(/\s+/g, "_");
+      };
+
+      const formattedName = formatNameForFilename(letter.senderName);
+      const filename = formattedName
+        ? `CARTA_DE_APRESENTACAO_${formattedName}.pdf`
+        : "CARTA_DE_APRESENTACAO.pdf";
+
+      const blob = await pdf(<CoverLetterPDF data={letter} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(url);
+      toast.success(t("dashboard.toasts.downloadCoverLetterSuccess"));
+    } catch (err) {
+      toast.error(t("dashboard.toasts.downloadCoverLetterError"));
+    }
+  };
 
   return (
     <div className="flex-1 w-full min-h-screen bg-background text-foreground flex flex-col">
@@ -404,305 +611,590 @@ export function DashboardClient({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-4xl font-black tracking-tight text-foreground">
-              {t("dashboard.title")}
+              {activeTab === "resumes"
+                ? t("dashboard.title")
+                : activeTab === "coverLetters"
+                  ? t("dashboard.coverLetterTitle")
+                  : t("dashboard.emailGeneratorTitle")}
             </h1>
             <p className="text-muted-foreground font-medium mt-1">
-              {t("dashboard.subtitle")}
+              {activeTab === "resumes"
+                ? t("dashboard.subtitle")
+                : activeTab === "coverLetters"
+                  ? t("dashboard.coverLetterSubtitle")
+                  : t("dashboard.emailGeneratorSubtitle")}
             </p>
           </div>
-          <Button
-            onClick={handleCreateNew}
-            className="rounded-xl px-5 py-6 bg-primary hover:bg-primary/95 text-white font-bold flex items-center gap-2 shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]"
+          {activeTab === "resumes" && (
+            <Button
+              onClick={handleCreateNew}
+              className="rounded-xl px-5 py-6 bg-primary hover:bg-primary/95 text-white font-bold flex items-center gap-2 shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]"
+            >
+              <Plus size={18} weight="bold" />
+              {t("dashboard.newResume")}
+            </Button>
+          )}
+          {activeTab === "coverLetters" && (
+            <Button
+              onClick={handleCreateCoverLetter}
+              className="rounded-xl px-5 py-6 bg-primary hover:bg-primary/95 text-white font-bold flex items-center gap-2 shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]"
+            >
+              <Plus size={18} weight="bold" />
+              {t("dashboard.newCoverLetter")}
+            </Button>
+          )}
+        </div>
+
+        <div className="flex gap-6 border-b border-border/40 pb-px">
+          <button
+            onClick={() => {
+              setActiveTab("resumes");
+              setSearch("");
+            }}
+            className={`pb-3 text-xs font-black uppercase tracking-widest border-b-2 transition-all ${
+              activeTab === "resumes"
+                ? "border-primary text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
           >
-            <Plus size={18} weight="bold" />
-            {t("dashboard.newResume")}
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-card/20 border border-border/40 p-4 rounded-2xl backdrop-blur-sm">
-          <div className="md:col-span-2 relative flex items-center">
-            <MagnifyingGlass
-              className="absolute left-3 text-muted-foreground"
-              size={18}
-            />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={t("dashboard.searchPlaceholder")}
-              autoComplete="off"
-              className="pl-10 rounded-xl bg-background/50 border-border/40 focus-visible:ring-primary"
-            />
-          </div>
-
-          <div className="flex items-center gap-2 bg-background/40 px-3 py-1 rounded-xl border border-border/40">
-            <Globe className="text-muted-foreground" size={18} />
-            <select
-              value={localeFilter}
-              onChange={(e) => setLocaleFilter(e.target.value)}
-              className="bg-transparent text-sm w-full outline-none text-foreground font-semibold cursor-pointer"
-            >
-              <option
-                value="all"
-                className="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50"
-              >
-                {t("dashboard.filterLanguage")}
-              </option>
-              <option
-                value="pt"
-                className="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50"
-              >
-                {t("dashboard.langPt")}
-              </option>
-              <option
-                value="en"
-                className="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50"
-              >
-                {t("dashboard.langEn")}
-              </option>
-            </select>
-          </div>
-
-          <div className="flex items-center gap-2 bg-background/40 px-3 py-1 rounded-xl border border-border/40">
-            <TagIcon className="text-muted-foreground" size={18} />
-            <select
-              value={tagFilter}
-              onChange={(e) => setTagFilter(e.target.value)}
-              className="bg-transparent text-sm w-full outline-none text-foreground font-semibold cursor-pointer"
-            >
-              <option
-                value="all"
-                className="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50"
-              >
-                {t("dashboard.filterTag")}
-              </option>
-              {allUserTags.map((tag) => (
-                <option
-                  key={tag.id}
-                  value={tag.id}
-                  className="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50"
-                >
-                  #{tag.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-            {t("dashboard.resumesCountFound", {
-              count: filteredResumes.length,
-            })}
-          </span>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() =>
-              setSortBy((prev) => (prev === "desc" ? "asc" : "desc"))
-            }
-            className="text-xs font-bold text-muted-foreground flex items-center gap-1.5"
+            {t("dashboard.resumesTab")}
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("coverLetters");
+              setSearch("");
+            }}
+            className={`pb-3 text-xs font-black uppercase tracking-widest border-b-2 transition-all ${
+              activeTab === "coverLetters"
+                ? "border-primary text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
           >
-            {sortBy === "desc" ? (
-              <SortDescending size={16} />
-            ) : (
-              <SortAscending size={16} />
-            )}
-            {sortBy === "desc"
-              ? t("dashboard.sortDesc")
-              : t("dashboard.sortAsc")}
-          </Button>
+            {t("dashboard.coverLettersTab")}
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("emails");
+              setSearch("");
+            }}
+            className={`pb-3 text-xs font-black uppercase tracking-widest border-b-2 transition-all ${
+              activeTab === "emails"
+                ? "border-primary text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {t("dashboard.emailsTab")}
+          </button>
         </div>
 
-        <AnimatePresence mode="popLayout">
-          {filteredResumes.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="py-12"
-            >
-              <EmptyState
-                icon={MagnifyingGlass}
-                title={t("dashboard.emptyStateTitle")}
-                description={t("dashboard.emptyStateDesc")}
-                action={{
-                  label: t("dashboard.emptyStateAction"),
-                  onClick: handleCreateNew,
-                }}
-              />
-            </motion.div>
-          ) : (
-            <motion.div
-              layout
-              className="grid grid-cols-1 md:grid-cols-3 gap-6"
-            >
-              {filteredResumes.map((resume) => (
-                <motion.div
-                  key={resume.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
+        {(activeTab === "resumes" || activeTab === "coverLetters") && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-card/20 border border-border/40 p-4 rounded-2xl backdrop-blur-sm">
+              <div className="md:col-span-2 relative flex items-center">
+                <MagnifyingGlass
+                  className="absolute left-3 text-muted-foreground"
+                  size={18}
+                />
+                <Input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder={
+                    activeTab === "resumes"
+                      ? t("dashboard.searchPlaceholder")
+                      : "Buscar cartas..."
+                  }
+                  autoComplete="off"
+                  className="pl-10 rounded-xl bg-background/50 border-border/40 focus-visible:ring-primary"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 bg-background/40 px-3 py-1 rounded-xl border border-border/40">
+                <Globe className="text-muted-foreground" size={18} />
+                <select
+                  value={localeFilter}
+                  onChange={(e) => setLocaleFilter(e.target.value)}
+                  className="bg-transparent text-sm w-full outline-none text-foreground font-semibold cursor-pointer"
                 >
-                  <Card
-                    onClick={() => handleEdit(resume.id)}
-                    className="group border-border/40 overflow-hidden hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 relative flex flex-col h-full bg-card/40 backdrop-blur-sm rounded-2xl cursor-pointer"
+                  <option
+                    value="all"
+                    className="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50"
                   >
-                    <CardContent className="p-6 flex flex-col justify-between h-full gap-6">
-                      <div className="space-y-4">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="space-y-1.5 flex-1 min-w-0">
-                            <h3 className="font-extrabold text-xl text-foreground truncate group-hover:text-primary transition-colors">
-                              {resume.title}
-                            </h3>
-                            <div className="flex items-center gap-2">
-                              <span className="text-[10px] uppercase font-black bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded">
-                                {resume.locale}
+                    {t("dashboard.filterLanguage")}
+                  </option>
+                  <option
+                    value="pt"
+                    className="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50"
+                  >
+                    {t("dashboard.langPt")}
+                  </option>
+                  <option
+                    value="en"
+                    className="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50"
+                  >
+                    {t("dashboard.langEn")}
+                  </option>
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2 bg-background/40 px-3 py-1 rounded-xl border border-border/40">
+                <TagIcon className="text-muted-foreground" size={18} />
+                <select
+                  value={tagFilter}
+                  onChange={(e) => setTagFilter(e.target.value)}
+                  className="bg-transparent text-sm w-full outline-none text-foreground font-semibold cursor-pointer"
+                >
+                  <option
+                    value="all"
+                    className="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50"
+                  >
+                    {t("dashboard.filterTag")}
+                  </option>
+                  {allUserTags.map((tag) => (
+                    <option
+                      key={tag.id}
+                      value={tag.id}
+                      className="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50"
+                    >
+                      #{tag.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                {activeTab === "resumes"
+                  ? t("dashboard.resumesCountFound", {
+                      count: filteredResumes.length,
+                    })
+                  : `${filteredCoverLetters.length} cartas encontradas`}
+              </span>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() =>
+                  setSortBy((prev) => (prev === "desc" ? "asc" : "desc"))
+                }
+                className="text-xs font-bold text-muted-foreground flex items-center gap-1.5"
+              >
+                {sortBy === "desc" ? (
+                  <SortDescending size={16} />
+                ) : (
+                  <SortAscending size={16} />
+                )}
+                {sortBy === "desc"
+                  ? t("dashboard.sortDesc")
+                  : t("dashboard.sortAsc")}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "resumes" && (
+          <>
+            <AnimatePresence mode="popLayout">
+              {filteredResumes.length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="py-12"
+                >
+                  <EmptyState
+                    icon={MagnifyingGlass}
+                    title={t("dashboard.emptyStateTitle")}
+                    description={t("dashboard.emptyStateDesc")}
+                    action={{
+                      label: t("dashboard.emptyStateAction"),
+                      onClick: handleCreateNew,
+                    }}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  layout
+                  className="grid grid-cols-1 md:grid-cols-3 gap-6"
+                >
+                  {filteredResumes.map((resume) => (
+                    <motion.div
+                      key={resume.id}
+                      layout
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Card
+                        onClick={() => handleEdit(resume.id)}
+                        className="group border-border/40 overflow-hidden hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 relative flex flex-col h-full bg-card/40 backdrop-blur-sm rounded-2xl cursor-pointer"
+                      >
+                        <CardContent className="p-6 flex flex-col justify-between h-full gap-6">
+                          <div className="space-y-4">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="space-y-1.5 flex-1 min-w-0">
+                                <h3 className="font-extrabold text-xl text-foreground truncate group-hover:text-primary transition-colors">
+                                  {resume.title}
+                                </h3>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] uppercase font-black bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded">
+                                    {resume.locale}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground font-medium">
+                                    {t("dashboard.lastUpdate")}{" "}
+                                    {new Date(
+                                      resume.updatedAt,
+                                    ).toLocaleDateString()}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <DropdownMenu>
+                                <DropdownMenuTrigger
+                                  asChild
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 rounded-full hover:bg-muted/60"
+                                  >
+                                    <DotsThreeVertical size={18} />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                  align="end"
+                                  className="rounded-xl p-1.5 min-w-[160px] border-border/40"
+                                >
+                                  <DropdownMenuItem
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleEdit(resume.id);
+                                    }}
+                                    className="gap-2 font-bold cursor-pointer rounded-lg"
+                                  >
+                                    <Pencil size={16} />
+                                    {t("dashboard.actions.edit")}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleDuplicate(resume.id);
+                                    }}
+                                    className="gap-2 font-bold cursor-pointer rounded-lg"
+                                  >
+                                    <Copy size={16} />
+                                    {t("dashboard.actions.duplicate")}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openShareSettings(resume);
+                                    }}
+                                    className="gap-2 font-bold cursor-pointer rounded-lg"
+                                  >
+                                    <ShareNetwork size={16} />
+                                    {t("dashboard.actions.share")}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openTagsSettings(resume);
+                                    }}
+                                    className="gap-2 font-bold cursor-pointer rounded-lg"
+                                  >
+                                    <TagIcon size={16} />
+                                    {t("dashboard.actions.manageTags")}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setResumeToDeleteId(resume.id);
+                                      setIsDeleteOpen(true);
+                                    }}
+                                    className="gap-2 font-bold text-destructive hover:text-destructive cursor-pointer rounded-lg"
+                                  >
+                                    <Trash size={16} />
+                                    {t("dashboard.actions.delete")}
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+
+                            {resume.tags && resume.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1.5 pt-1">
+                                {resume.tags.map((tag) => (
+                                  <span
+                                    key={tag.id}
+                                    style={{
+                                      backgroundColor: `${tag.color}15`,
+                                      color: tag.color,
+                                      borderColor: `${tag.color}30`,
+                                    }}
+                                    className="text-[10px] font-bold border px-2 py-0.5 rounded-full"
+                                  >
+                                    #{tag.name}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex items-center justify-between pt-4 border-t border-border/40 mt-auto">
+                            <div className="flex items-center gap-4">
+                              <div className="flex items-center gap-1 text-muted-foreground text-xs font-semibold">
+                                <Eye size={16} />
+                                <span>
+                                  {resume.views} {t("dashboard.views")}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1 text-muted-foreground text-xs font-semibold">
+                                <Download size={16} />
+                                <span>
+                                  {resume.downloads} {t("dashboard.downloads")}
+                                </span>
+                              </div>
+                            </div>
+
+                            {resume.slug && (
+                              <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1">
+                                <Check size={10} weight="bold" />{" "}
+                                {t("dashboard.statusActive")}
                               </span>
-                              <span className="text-xs text-muted-foreground font-medium">
-                                {t("dashboard.lastUpdate")}{" "}
-                                {new Date(
-                                  resume.updatedAt,
-                                ).toLocaleDateString()}
-                              </span>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </>
+        )}
+
+        {activeTab === "coverLetters" && (
+          <>
+            <AnimatePresence mode="popLayout">
+              {filteredCoverLetters.length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="py-12"
+                >
+                  <EmptyState
+                    icon={MagnifyingGlass}
+                    title={t("dashboard.emptyStateLettersTitle")}
+                    description={t("dashboard.emptyStateLettersDesc")}
+                    action={{
+                      label: t("dashboard.emptyStateLettersAction"),
+                      onClick: handleCreateCoverLetter,
+                    }}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  layout
+                  className="grid grid-cols-1 md:grid-cols-3 gap-6"
+                >
+                  {filteredCoverLetters.map((letter) => (
+                    <motion.div
+                      key={letter.id}
+                      layout
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Card
+                        onClick={() =>
+                          router.push(
+                            `/${activeLocale}/editor/cover-letter/${letter.id}`,
+                          )
+                        }
+                        className="group border-border/40 overflow-hidden hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 relative flex flex-col h-full bg-card/40 backdrop-blur-sm rounded-2xl cursor-pointer"
+                      >
+                        <CardContent className="p-6 flex flex-col justify-between h-full gap-6">
+                          <div className="space-y-4">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="space-y-1.5 flex-1 min-w-0">
+                                <h3 className="font-extrabold text-xl text-foreground truncate group-hover:text-primary transition-colors">
+                                  {letter.title}
+                                </h3>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] uppercase font-black bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded">
+                                    {letter.locale}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground font-medium">
+                                    {t("dashboard.lastUpdate")}{" "}
+                                    {new Date(
+                                      letter.updatedAt,
+                                    ).toLocaleDateString(
+                                      activeLocale === "en" ? "en-US" : "pt-BR",
+                                    )}
+                                  </span>
+                                </div>
+                              </div>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger
+                                  asChild
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 rounded-full hover:bg-muted/60"
+                                  >
+                                    <DotsThreeVertical size={18} />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                  align="end"
+                                  className="rounded-xl p-1.5 min-w-[160px] border-border/40"
+                                >
+                                  <DropdownMenuItem
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      router.push(
+                                        `/${activeLocale}/editor/cover-letter/${letter.id}`,
+                                      );
+                                    }}
+                                    className="gap-2 font-bold cursor-pointer rounded-lg"
+                                  >
+                                    <Pencil size={16} />
+                                    Editar
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleDuplicateCoverLetter(letter.id);
+                                    }}
+                                    className="gap-2 font-bold cursor-pointer rounded-lg"
+                                  >
+                                    <Copy size={16} />
+                                    {t("dashboard.actions.duplicate")}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleDownloadCoverLetter(letter);
+                                    }}
+                                    className="gap-2 font-bold cursor-pointer rounded-lg"
+                                  >
+                                    <Download size={16} />
+                                    {t("coverLetters.downloadPDF")}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openTagsSettings(letter);
+                                    }}
+                                    className="gap-2 font-bold cursor-pointer rounded-lg"
+                                  >
+                                    <TagIcon size={16} />
+                                    {t("dashboard.actions.manageTags")}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleDeleteCoverLetter(letter.id);
+                                    }}
+                                    className="gap-2 font-bold text-destructive hover:text-destructive cursor-pointer rounded-lg"
+                                  >
+                                    <Trash size={16} />
+                                    {t("dashboard.actions.delete")}
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                            {letter.tags && letter.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1.5 pt-1">
+                                {letter.tags.map((tag: any) => (
+                                  <span
+                                    key={tag.id}
+                                    style={{
+                                      backgroundColor: `${tag.color}15`,
+                                      color: tag.color,
+                                      borderColor: `${tag.color}30`,
+                                    }}
+                                    className="text-[10px] font-bold border px-2 py-0.5 rounded-full"
+                                  >
+                                    #{tag.name}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                            <div className="text-xs text-muted-foreground line-clamp-3">
+                              {letter.content}
                             </div>
                           </div>
-
-                          <DropdownMenu>
-                            <DropdownMenuTrigger
-                              asChild
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 rounded-full hover:bg-muted/60"
-                              >
-                                <DotsThreeVertical size={20} weight="bold" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent
-                              align="end"
-                              className="rounded-xl border-border/40 w-44"
-                            >
-                              <DropdownMenuItem
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleEdit(resume.id);
-                                }}
-                                className="gap-2 font-bold cursor-pointer rounded-lg"
-                              >
-                                <Pencil size={16} />
-                                {t("dashboard.actions.edit")}
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDuplicate(resume.id);
-                                }}
-                                className="gap-2 font-bold cursor-pointer rounded-lg"
-                              >
-                                <Copy size={16} />
-                                {t("dashboard.actions.duplicate")}
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  router.push(
-                                    `/${activeLocale}/dashboard/analytics/${resume.id}`,
-                                  );
-                                }}
-                                className="gap-2 font-bold cursor-pointer rounded-lg"
-                              >
-                                <ChartBar size={16} />
-                                {t("dashboard.actions.analytics")}
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openShareSettings(resume);
-                                }}
-                                className="gap-2 font-bold cursor-pointer rounded-lg"
-                              >
-                                <ShareNetwork size={16} />
-                                {t("dashboard.actions.share")}
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openTagsSettings(resume);
-                                }}
-                                className="gap-2 font-bold cursor-pointer rounded-lg"
-                              >
-                                <TagIcon size={16} />
-                                {t("dashboard.actions.manageTags")}
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setResumeToDeleteId(resume.id);
-                                  setIsDeleteOpen(true);
-                                }}
-                                className="gap-2 font-bold text-destructive hover:text-destructive cursor-pointer rounded-lg"
-                              >
-                                <Trash size={16} />
-                                {t("dashboard.actions.delete")}
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-
-                        {resume.tags && resume.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1.5 pt-1">
-                            {resume.tags.map((tag) => (
-                              <span
-                                key={tag.id}
-                                style={{
-                                  backgroundColor: `${tag.color}15`,
-                                  color: tag.color,
-                                  borderColor: `${tag.color}30`,
-                                }}
-                                className="text-[10px] font-bold border px-2 py-0.5 rounded-full"
-                              >
-                                #{tag.name}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex items-center justify-between pt-4 border-t border-border/40 mt-auto">
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-1 text-muted-foreground text-xs font-semibold">
-                            <Eye size={16} />
-                            <span>
-                              {resume.views} {t("dashboard.views")}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1 text-muted-foreground text-xs font-semibold">
-                            <Download size={16} />
-                            <span>
-                              {resume.downloads} {t("dashboard.downloads")}
-                            </span>
-                          </div>
-                        </div>
-
-                        {resume.slug && (
-                          <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1">
-                            <Check size={10} weight="bold" />{" "}
-                            {t("dashboard.statusActive")}
-                          </span>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
                 </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+              )}
+            </AnimatePresence>
+          </>
+        )}
+
+        {activeTab === "emails" && (
+          <div className="w-full py-8 space-y-12">
+            <div className="text-left space-y-6">
+              <div className="space-y-2">
+                <h2 className="text-3xl md:text-4xl font-black tracking-tight text-foreground leading-tight">
+                  {t("emailGenerator.generateInSeconds")}
+                </h2>
+                <p className="text-muted-foreground text-sm font-medium leading-relaxed max-w-lg">
+                  {t("emailGenerator.createPerfectPresentations")}
+                </p>
+              </div>
+              <Button
+                onClick={() =>
+                  router.push(`/${activeLocale}/dashboard/email-generator`)
+                }
+                className="rounded-xl px-6 py-6 font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all text-xs"
+              >
+                {t("emailGenerator.openGenerator")}
+              </Button>
+            </div>
+
+            <div className="border-t border-border/40 pt-10 grid grid-cols-1 sm:grid-cols-3 gap-8">
+              <div className="space-y-2">
+                <h3 className="text-lg font-bold text-foreground">
+                  {t("dashboard.emailsTab")}
+                </h3>
+                <p className="text-sm text-muted-foreground font-medium">
+                  {t("emailGenerator.createPerfectPresentations")}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="text-lg font-bold text-foreground">
+                  {t("emailGenerator.tone")}
+                </h3>
+                <p className="text-sm text-muted-foreground font-medium">
+                  {activeLocale === "en"
+                    ? "Formal, friendly, or direct variations."
+                    : "Variações formal, amigável ou direta."}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="text-lg font-bold text-foreground">
+                  {activeLocale === "en" ? "Copying Text" : "Copiar texto"}
+                </h3>
+                <p className="text-sm text-muted-foreground font-medium">
+                  {activeLocale === "en"
+                    ? "Copy subject and message with one click."
+                    : "Assunto e mensagem copiados com um clique."}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
 
       <Dialog
@@ -867,7 +1359,11 @@ export function DashboardClient({
           <DialogHeader className="pb-2">
             <DialogTitle className="text-2xl font-black tracking-tight flex items-center gap-2">
               <TagIcon size={24} weight="duotone" className="text-primary" />
-              {t("dashboard.tags.title")}
+              {coverLetters.some((c) => c.id === selectedResume?.id)
+                ? activeLocale === "en"
+                  ? "Cover Letter Tags"
+                  : "Tags da Carta de Apresentação"
+                : t("dashboard.tags.title")}
             </DialogTitle>
           </DialogHeader>
 
@@ -875,7 +1371,11 @@ export function DashboardClient({
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">
-                  {t("dashboard.tags.title")}
+                  {coverLetters.some((c) => c.id === selectedResume?.id)
+                    ? activeLocale === "en"
+                      ? "Tags"
+                      : "Tags"
+                    : t("dashboard.tags.title")}
                 </label>
               </div>
 
@@ -906,14 +1406,18 @@ export function DashboardClient({
                 </div>
               ) : (
                 <p className="text-xs text-muted-foreground/80 font-medium">
-                  {t("dashboard.noTagsLinked")}
+                  {coverLetters.some((c) => c.id === selectedResume?.id)
+                    ? "Nenhuma tag vinculada a esta carta de apresentação."
+                    : t("dashboard.noTagsLinked")}
                 </p>
               )}
             </div>
 
             <div className="space-y-4 pt-6 border-t border-border/40">
               <label className="text-xs font-black text-muted-foreground uppercase tracking-widest block">
-                {t("dashboard.createAndLinkTag")}
+                {coverLetters.some((c) => c.id === selectedResume?.id)
+                  ? "Criar e vincular nova tag"
+                  : t("dashboard.createAndLinkTag")}
               </label>
 
               <div className="flex gap-2">
