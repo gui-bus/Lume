@@ -494,7 +494,7 @@ export function DashboardClient({
         localeFilter === "all" || letter.locale === localeFilter;
       const matchesTag =
         coverLetterTagFilter === "all" ||
-        letter.tags.some((t) => t.id === coverLetterTagFilter);
+        letter.tags.some((t: any) => t.id === coverLetterTagFilter);
       return matchesSearch && matchesLocale && matchesTag;
     })
     .sort((a, b) => {
