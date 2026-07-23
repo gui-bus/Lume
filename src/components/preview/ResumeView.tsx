@@ -4,6 +4,7 @@ import { ResumeData } from "@/types/resume";
 import { useTranslations, useLocale } from "next-intl";
 import { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
+import { cn } from "@/lib/utils";
 
 interface ResumeViewProps {
   data: ResumeData;
@@ -20,6 +21,7 @@ export function ResumeView({
   qrCodeUrl,
   labels,
   sectionsOrder,
+  templateId = "classic",
 }: ResumeViewProps) {
   const tOriginal = useTranslations("common.resume");
   const locale = useLocale();
@@ -188,7 +190,14 @@ export function ResumeView({
         languages?.length > 0 ? (
           <section key="languages">
             {renderSectionHeader("languages")}
-            <div className="grid grid-cols-2 gap-x-12 gap-y-4">
+            <div
+              className={cn(
+                "grid gap-y-4",
+                templateId === "modern"
+                  ? "grid-cols-1 gap-x-0"
+                  : "grid-cols-2 gap-x-12",
+              )}
+            >
               {languages.map((l, i) => {
                 const translateLevel = (level: string) => {
                   const map: Record<string, string> = {
@@ -413,9 +422,110 @@ export function ResumeView({
 
     const orderToUse = sectionsOrder || defaultSectionsOrder;
 
+    if (templateId === "modern") {
+      const rightColumnOrder = orderToUse.filter(
+        (id) => id !== "skills" && id !== "languages",
+      );
+
+      return (
+        <div className="a4-page flex gap-8 shadow-none text-left p-[20mm]">
+          {/* Left Column (Sidebar) */}
+          <div className="w-[30%] border-r border-slate-100 pr-6 flex flex-col gap-6">
+            <div>
+              <h2
+                className="text-[10px] font-bold uppercase tracking-[0.2em] mb-4"
+                style={{ color: colorTheme }}
+              >
+                Contato
+              </h2>
+              <div className="flex flex-col gap-2 text-[11px] font-semibold text-slate-500">
+                {personalInfo.email && (
+                  <a
+                    href={`mailto:${personalInfo.email}`}
+                    className="text-lume-blue hover:underline break-all"
+                  >
+                    {personalInfo.email}
+                  </a>
+                )}
+                {personalInfo.phone && (
+                  <a
+                    href={`https://wa.me/${personalInfo.phone.replace(/\D/g, "")}?text=${encodeURIComponent(locale === "en" ? "I saw your resume" : "Vim pelo seu currículo")}`}
+                    target="_blank"
+                    className="text-lume-blue hover:underline"
+                  >
+                    {personalInfo.phone}
+                  </a>
+                )}
+                {personalInfo.location && <span>{personalInfo.location}</span>}
+                {personalInfo.linkedin && (
+                  <a
+                    href={personalInfo.linkedin}
+                    target="_blank"
+                    className="text-lume-blue hover:underline uppercase tracking-wider text-[9px] font-bold"
+                  >
+                    LinkedIn
+                  </a>
+                )}
+                {personalInfo.github && (
+                  <a
+                    href={personalInfo.github}
+                    target="_blank"
+                    className="text-lume-blue hover:underline uppercase tracking-wider text-[9px] font-bold"
+                  >
+                    GitHub
+                  </a>
+                )}
+                {personalInfo.website && (
+                  <a
+                    href={personalInfo.website}
+                    target="_blank"
+                    className="text-lume-blue hover:underline uppercase tracking-wider text-[9px] font-bold"
+                  >
+                    {t("portfolio")}
+                  </a>
+                )}
+              </div>
+            </div>
+
+            {sectionRenderers.skills}
+            {sectionRenderers.languages}
+          </div>
+
+          {/* Right Column */}
+          <div className="w-[70%] pl-2 flex flex-col gap-6">
+            <div className="flex flex-col gap-2 pb-4">
+              <h1
+                className="text-[28px] font-bold tracking-tight leading-tight uppercase"
+                style={{ color: colorTheme }}
+              >
+                {personalInfo.name || t("yourName")}
+              </h1>
+            </div>
+
+            <div className="space-y-8">
+              {rightColumnOrder.map((sectionId) => sectionRenderers[sectionId])}
+
+              {qrCodeUrl && (
+                <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-slate-100 no-print">
+                  <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider text-right max-w-[150px]">
+                    {labels?.qrCodeLabel ||
+                      "Acesse a versão digital do meu perfil"}
+                  </span>
+                  <img
+                    src={qrCodeUrl}
+                    alt="QR Code"
+                    className="w-12 h-12 rounded border border-slate-100 p-0.5 bg-white"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="a4-page flex flex-col shadow-none text-left">
-        {/* Header */}
         <div className="flex flex-col gap-2 pb-8">
           <h1
             className="text-[28px] font-bold tracking-tight leading-tight uppercase"
@@ -489,7 +599,6 @@ export function ResumeView({
           </div>
         </div>
 
-        {/* Dynamic Sections */}
         <div className="space-y-8">
           {orderToUse.map((sectionId) => sectionRenderers[sectionId])}
 
@@ -508,7 +617,16 @@ export function ResumeView({
         </div>
       </div>
     );
-  }, [data, colorTheme, qrCodeUrl, t, sectionsOrder, labels]);
+  }, [
+    data,
+    colorTheme,
+    qrCodeUrl,
+    t,
+    sectionsOrder,
+    labels,
+    templateId,
+    locale,
+  ]);
 
   return content;
 }

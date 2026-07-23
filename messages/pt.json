@@ -130,8 +130,14 @@
         "generateLinkDesc": "Compartilhe via URL única",
         "metrics": "Métricas de Acesso",
         "views": "Views",
-        "downloads": "Downloads",
-        "version": "Lume v1.0"
+        "version": "Lume v1.0",
+        "templates": {
+          "title": "Modelo de Layout",
+          "classic": "Clássico (1 Coluna)",
+          "classicDesc": "Layout tradicional com todas as informações empilhadas verticalmente.",
+          "modern": "Moderno (2 Colunas)",
+          "modernDesc": "Layout moderno de 2 colunas com contatos e habilidades na lateral."
+        }
       },
       "auth": {
         "signIn": "Entrar",

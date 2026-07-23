@@ -52,6 +52,7 @@ import {
   Info,
   LinkedinLogo,
   List,
+  Layout,
   MagnifyingGlassMinus,
   MagnifyingGlassPlus,
   Moon,
@@ -222,6 +223,30 @@ export function EditorView({
     }
   };
 
+  const handleTemplateIdChange = async (newTemplateId: string) => {
+    setTemplateId(newTemplateId);
+    if (resumeId) {
+      try {
+        await saveResume(
+          resumeId,
+          data,
+          data.personalInfo.name || undefined,
+          resumeLocale,
+          groupId,
+          slug,
+          newTemplateId,
+          showQrCode,
+          undefined,
+          undefined,
+          undefined,
+          sectionsOrder,
+        );
+      } catch (err) {
+        console.error("Failed to save template:", err);
+      }
+    }
+  };
+
   const resumeLabels = getResumeLabels(resumeLocale);
 
   const handleDownload = async () => {
@@ -239,6 +264,7 @@ export function EditorView({
         <ResumePDF
           data={data}
           colorTheme="#18181b"
+          templateId={templateId}
           labels={labels}
           qrCodeDataUrl={qrCodeUrl}
           sectionsOrder={sectionsOrder}
@@ -486,6 +512,47 @@ export function EditorView({
             Idioma
           </span>
           <LanguageSwitcher />
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+          <Layout size={14} weight="duotone" />{" "}
+          {t("header.tools.templates.title")}
+        </h4>
+        <div className="grid grid-cols-1 gap-3">
+          <button
+            onClick={() => handleTemplateIdChange("classic")}
+            className={cn(
+              "p-4 rounded-2xl border text-left transition-all duration-300 flex flex-col gap-1 w-full",
+              templateId === "classic"
+                ? "border-primary bg-primary/5 shadow-md shadow-primary/5"
+                : "border-border/40 bg-muted/5 hover:bg-muted/20 hover:border-border/80",
+            )}
+          >
+            <span className="text-sm font-bold text-foreground">
+              {t("header.tools.templates.classic")}
+            </span>
+            <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">
+              {t("header.tools.templates.classicDesc")}
+            </span>
+          </button>
+          <button
+            onClick={() => handleTemplateIdChange("modern")}
+            className={cn(
+              "p-4 rounded-2xl border text-left transition-all duration-300 flex flex-col gap-1 w-full",
+              templateId === "modern"
+                ? "border-primary bg-primary/5 shadow-md shadow-primary/5"
+                : "border-border/40 bg-muted/5 hover:bg-muted/20 hover:border-border/80",
+            )}
+          >
+            <span className="text-sm font-bold text-foreground">
+              {t("header.tools.templates.modern")}
+            </span>
+            <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">
+              {t("header.tools.templates.modernDesc")}
+            </span>
+          </button>
         </div>
       </div>
 
@@ -759,6 +826,36 @@ export function EditorView({
       </header>
 
       <div className="w-full lg:w-[480px] xl:w-[540px] lg:flex-none flex-1 lg:h-full shrink-0 border-r bg-card/10 overflow-hidden relative flex flex-col text-left">
+        <div className="px-6 py-4 border-b border-border/40 flex items-center justify-between gap-4 shrink-0 bg-background/50">
+          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+            <Layout size={14} weight="duotone" className="text-primary" />
+            {t("header.tools.templates.title")}
+          </span>
+          <div className="flex bg-muted/40 p-1 rounded-xl border border-border/40 shrink-0">
+            <button
+              onClick={() => handleTemplateIdChange("classic")}
+              className={cn(
+                "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300",
+                templateId === "classic"
+                  ? "bg-background text-primary shadow-sm ring-1 ring-border/20"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {t("header.tools.templates.classic").split(" ")[0]}
+            </button>
+            <button
+              onClick={() => handleTemplateIdChange("modern")}
+              className={cn(
+                "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300",
+                templateId === "modern"
+                  ? "bg-background text-primary shadow-sm ring-1 ring-border/20"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {t("header.tools.templates.modern").split(" ")[0]}
+            </button>
+          </div>
+        </div>
         <ResumeForm
           key={locale}
           initialData={data}
@@ -1093,6 +1190,7 @@ export function EditorView({
                   qrCodeUrl={qrCodeUrl}
                   labels={resumeLabels}
                   sectionsOrder={sectionsOrder}
+                  templateId={templateId}
                 />
               </div>
             </motion.div>

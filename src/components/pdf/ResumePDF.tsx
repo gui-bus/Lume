@@ -187,6 +187,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 4 * PX,
   },
+  leftCol: {
+    width: "35%",
+    paddingRight: 16 * PX,
+  },
+  rightCol: {
+    width: "65%",
+    paddingLeft: 16 * PX,
+    borderLeft: "1px solid #e2e8f0",
+  },
+  contactCol: {
+    flexDirection: "column",
+    gap: 4 * PX,
+    marginBottom: 24 * PX,
+  },
 });
 
 export const ResumePDF = ({
@@ -194,10 +208,12 @@ export const ResumePDF = ({
   colorTheme = "#18181b",
   labels,
   sectionsOrder,
+  templateId = "classic",
 }: {
   data: ResumeData;
   colorTheme?: string;
   sectionsOrder?: string[];
+  templateId?: string;
   labels: {
     title: string;
     yourName: string;
@@ -214,6 +230,7 @@ export const ResumePDF = ({
     at: string;
     repo: string;
     demo: string;
+    locale?: string;
     langLabels: {
       conversation: string;
       writing: string;
@@ -279,7 +296,13 @@ export const ResumePDF = ({
               wrap={false}
             >
               <View style={styles.itemHeader}>
-                <View style={{ flexDirection: "row", alignItems: "baseline" }}>
+                <View
+                  style={{
+                    flexDirection: templateId === "modern" ? "column" : "row",
+                    alignItems:
+                      templateId === "modern" ? "flex-start" : "baseline",
+                  }}
+                >
                   <Text
                     style={[styles.itemTitle, { textTransform: "uppercase" }]}
                   >
@@ -290,10 +313,12 @@ export const ResumePDF = ({
                       fontSize: 12 * PX,
                       color: "#475569",
                       fontWeight: "bold",
-                      marginLeft: 4 * PX,
+                      marginLeft: templateId === "modern" ? 0 : 4 * PX,
+                      marginTop: templateId === "modern" ? 2 * PX : 0,
                     }}
                   >
-                    — {exp.position}
+                    {templateId === "modern" ? "" : "— "}
+                    {exp.position}
                   </Text>
                 </View>
                 <Text style={styles.itemDate}>
@@ -327,7 +352,13 @@ export const ResumePDF = ({
               wrap={false}
             >
               <View style={styles.itemHeader}>
-                <View style={{ flexDirection: "row", alignItems: "baseline" }}>
+                <View
+                  style={{
+                    flexDirection: templateId === "modern" ? "column" : "row",
+                    alignItems:
+                      templateId === "modern" ? "flex-start" : "baseline",
+                  }}
+                >
                   <Text
                     style={[
                       styles.itemTitle,
@@ -341,10 +372,12 @@ export const ResumePDF = ({
                       fontSize: 11 * PX,
                       color: "#475569",
                       fontWeight: "bold",
-                      marginLeft: 4 * PX,
+                      marginLeft: templateId === "modern" ? 0 : 4 * PX,
+                      marginTop: templateId === "modern" ? 2 * PX : 0,
                     }}
                   >
-                    | {edu.degree} — {edu.field}
+                    {templateId === "modern" ? "" : "| "}
+                    {edu.degree} — {edu.field}
                   </Text>
                 </View>
                 <Text style={styles.itemDate}>{edu.graduationDate}</Text>
@@ -416,7 +449,7 @@ export const ResumePDF = ({
           {renderSectionTitle(labels.languages)}
           <View
             style={{
-              flexDirection: "row",
+              flexDirection: templateId === "modern" ? "column" : "row",
               flexWrap: "wrap",
               gap: 20 * PX,
             }}
@@ -490,7 +523,11 @@ export const ResumePDF = ({
               );
 
               return (
-                <View key={i} style={{ width: "45%" }} wrap={false}>
+                <View
+                  key={i}
+                  style={{ width: templateId === "modern" ? "100%" : "45%" }}
+                  wrap={false}
+                >
                   <Text
                     style={[
                       styles.langName,
@@ -647,72 +684,143 @@ export const ResumePDF = ({
 
   const orderToUse = sectionsOrder || defaultOrder;
 
+  const leftColSections = ["skills", "languages"];
+  const rightColSections = orderToUse.filter(
+    (id) => !leftColSections.includes(id),
+  );
+
   return (
     <Document
       title={`${labels.title} - ${personalInfo.name || "Lume"}`}
       author="Lume"
     >
       <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
-          <Text
-            style={[
-              styles.name,
-              { color: colorTheme, textTransform: "uppercase" },
-            ]}
-          >
-            {personalInfo.name || labels.yourName}
-          </Text>
-          <View style={styles.contactRow}>
-            {personalInfo.email && (
-              <Link style={styles.link} src={`mailto:${personalInfo.email}`}>
-                {personalInfo.email}
-              </Link>
-            )}
-            {personalInfo.phone && (
-              <>
-                <Text style={styles.bullet}>•</Text>
-                <Link
-                  style={styles.link}
-                  src={`https://wa.me/${personalInfo.phone.replace(/\D/g, "")}?text=${encodeURIComponent(labels.locale === "en" ? "I saw your resume" : "Vim pelo seu currículo")}`}
+        {templateId === "modern" ? (
+          <View style={{ flexDirection: "row" }}>
+            <View style={styles.leftCol}>
+              <View style={styles.contactCol}>
+                {personalInfo.email && (
+                  <Link
+                    style={styles.link}
+                    src={`mailto:${personalInfo.email}`}
+                  >
+                    {personalInfo.email}
+                  </Link>
+                )}
+                {personalInfo.phone && (
+                  <Link
+                    style={styles.link}
+                    src={`https://wa.me/${personalInfo.phone.replace(/\D/g, "")}?text=${encodeURIComponent(labels.locale === "en" ? "I saw your resume" : "Vim pelo seu currículo")}`}
+                  >
+                    {personalInfo.phone}
+                  </Link>
+                )}
+                {personalInfo.location && (
+                  <Text style={styles.contactText}>
+                    {personalInfo.location}
+                  </Text>
+                )}
+                {personalInfo.linkedin && (
+                  <Link style={styles.link} src={personalInfo.linkedin}>
+                    LINKEDIN
+                  </Link>
+                )}
+                {personalInfo.github && (
+                  <Link style={styles.link} src={personalInfo.github}>
+                    GITHUB
+                  </Link>
+                )}
+                {personalInfo.website && (
+                  <Link style={styles.link} src={personalInfo.website}>
+                    {labels.portfolio.toUpperCase()}
+                  </Link>
+                )}
+              </View>
+              {leftColSections.map((id) => sectionRenderers[id])}
+            </View>
+            <View style={styles.rightCol}>
+              <View style={styles.header}>
+                <Text
+                  style={[
+                    styles.name,
+                    { color: colorTheme, textTransform: "uppercase" },
+                  ]}
                 >
-                  {personalInfo.phone}
-                </Link>
-              </>
-            )}
-            {personalInfo.location && (
-              <>
-                <Text style={styles.bullet}>•</Text>
-                <Text style={styles.contactText}>{personalInfo.location}</Text>
-              </>
-            )}
-            {personalInfo.linkedin && (
-              <>
-                <Text style={styles.bullet}>•</Text>
-                <Link style={styles.link} src={personalInfo.linkedin}>
-                  LINKEDIN
-                </Link>
-              </>
-            )}
-            {personalInfo.github && (
-              <>
-                <Text style={styles.bullet}>•</Text>
-                <Link style={styles.link} src={personalInfo.github}>
-                  GITHUB
-                </Link>
-              </>
-            )}
-            {personalInfo.website && (
-              <>
-                <Text style={styles.bullet}>•</Text>
-                <Link style={styles.link} src={personalInfo.website}>
-                  {labels.portfolio.toUpperCase()}
-                </Link>
-              </>
-            )}
+                  {personalInfo.name || labels.yourName}
+                </Text>
+              </View>
+              {rightColSections.map((id) => sectionRenderers[id])}
+            </View>
           </View>
-        </View>
+        ) : (
+          <>
+            <View style={styles.header}>
+              <Text
+                style={[
+                  styles.name,
+                  { color: colorTheme, textTransform: "uppercase" },
+                ]}
+              >
+                {personalInfo.name || labels.yourName}
+              </Text>
+              <View style={styles.contactRow}>
+                {personalInfo.email && (
+                  <Link
+                    style={styles.link}
+                    src={`mailto:${personalInfo.email}`}
+                  >
+                    {personalInfo.email}
+                  </Link>
+                )}
+                {personalInfo.phone && (
+                  <>
+                    <Text style={styles.bullet}>•</Text>
+                    <Link
+                      style={styles.link}
+                      src={`https://wa.me/${personalInfo.phone.replace(/\D/g, "")}?text=${encodeURIComponent(labels.locale === "en" ? "I saw your resume" : "Vim pelo seu currículo")}`}
+                    >
+                      {personalInfo.phone}
+                    </Link>
+                  </>
+                )}
+                {personalInfo.location && (
+                  <>
+                    <Text style={styles.bullet}>•</Text>
+                    <Text style={styles.contactText}>
+                      {personalInfo.location}
+                    </Text>
+                  </>
+                )}
+                {personalInfo.linkedin && (
+                  <>
+                    <Text style={styles.bullet}>•</Text>
+                    <Link style={styles.link} src={personalInfo.linkedin}>
+                      LINKEDIN
+                    </Link>
+                  </>
+                )}
+                {personalInfo.github && (
+                  <>
+                    <Text style={styles.bullet}>•</Text>
+                    <Link style={styles.link} src={personalInfo.github}>
+                      GITHUB
+                    </Link>
+                  </>
+                )}
+                {personalInfo.website && (
+                  <>
+                    <Text style={styles.bullet}>•</Text>
+                    <Link style={styles.link} src={personalInfo.website}>
+                      {labels.portfolio.toUpperCase()}
+                    </Link>
+                  </>
+                )}
+              </View>
+            </View>
 
-        {orderToUse.map((id) => sectionRenderers[id])}
+            {orderToUse.map((id) => sectionRenderers[id])}
+          </>
+        )}
       </Page>
     </Document>
   );

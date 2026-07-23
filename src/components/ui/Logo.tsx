@@ -12,28 +12,21 @@ interface LogoProps {
 }
 
 export function Logo({ className, width = 120, height = 31 }: LogoProps) {
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return <div style={{ width, height }} className={className} />;
-  }
-
-  const isDark = resolvedTheme === "dark";
-  const src = isDark ? "/LUME_WHITE.svg" : "/LUME_BLACK.svg";
-
   return (
     <div className={cn("relative", className)} style={{ width, height }}>
       <Image
-        src={src}
+        src="/logo_white.svg"
         alt="Lume Logo"
         fill
         priority
-        className="object-contain"
+        className="object-contain hidden dark:block"
+      />
+      <Image
+        src="/logo_black.svg"
+        alt="Lume Logo"
+        fill
+        priority
+        className="object-contain block dark:hidden"
       />
     </div>
   );

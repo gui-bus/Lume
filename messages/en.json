@@ -130,8 +130,14 @@
         "generateLinkDesc": "Share via unique URL",
         "metrics": "Access Metrics",
         "views": "Views",
-        "downloads": "Downloads",
-        "version": "Lume v1.0"
+        "version": "Lume v1.0",
+        "templates": {
+          "title": "Layout Template",
+          "classic": "Classic (1 Column)",
+          "classicDesc": "Traditional layout with all information stacked vertically.",
+          "modern": "Modern (2 Columns)",
+          "modernDesc": "Modern 2-column layout with sidebar contacts and skills."
+        }
       },
       "auth": {
         "signIn": "Sign In",

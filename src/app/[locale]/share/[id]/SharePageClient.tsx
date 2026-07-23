@@ -134,6 +134,7 @@ export default function SharePageClient({
         <ResumePDF
           data={data}
           colorTheme={resume.colorTheme || "#18181b"}
+          templateId={resume.templateId || undefined}
           labels={labels}
           qrCodeDataUrl={qrCodeUrl}
           sectionsOrder={resume.sectionsOrder ?? undefined}
@@ -330,6 +331,7 @@ export default function SharePageClient({
             qrCodeUrl={qrCodeUrl}
             labels={resumeLabels}
             templateId={resume.templateId}
+            sectionsOrder={resume.sectionsOrder ?? undefined}
           />
         </PageWrapper>
 

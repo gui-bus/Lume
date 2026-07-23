@@ -33,7 +33,7 @@ export default async function Page({
   let groupId: string | undefined = id;
   let initialShowQrCode = false;
   let initialSlug: string | undefined = undefined;
-  let initialTemplateId = "modern";
+  let initialTemplateId = "classic";
   let initialResumeLocale = locale;
   let initialSectionsOrder: string[] | undefined = undefined;
 
@@ -44,7 +44,7 @@ export default async function Page({
     groupId = res.groupId ?? undefined;
     initialSlug = res.slug ?? undefined;
     initialShowQrCode = res.showQrCode ?? false;
-    initialTemplateId = res.templateId ?? "modern";
+    initialTemplateId = res.templateId ?? "classic";
     initialResumeLocale = res.locale ?? locale;
     initialSectionsOrder = res.sectionsOrder ?? undefined;
   }

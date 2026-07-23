@@ -86,12 +86,12 @@ graph TB
 
 ## 🚀 Funcionalidades Principais
 
-| Módulo                     | Funcionalidades                                                                               | Detalhes Técnicos                                                                             |
-| :------------------------- | :-------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
-| **📝 Editor Formulário**   | • Abas categorizadas<br/>• Drag & Drop reordering<br/>• Preenchimento dinâmico                | Formulário reativo com `@dnd-kit/sortable` e estado gerenciado com validação Zod.             |
-| **📄 PDF Engine**          | • Preview instantâneo<br/>• Download direto em Blob<br/>• Temas de cores Hex                  | Desenvolvido com `@react-pdf/renderer` sem necessidade de servidor Node para gerar arquivos.  |
-| **🌐 Internacionalização** | • Rotas `/pt` e `/en`<br/>• Versões vinculadas por `groupId`<br/>• Seletor dinâmico           | Suporte completo via `next-intl` com sincronização automática do currículo no idioma correto. |
-| **🔗 Links Públicos**      | • Slugs curtos e amigáveis<br/>• Métricas de `views` e `downloads`<br/>• Layout público limpo | Rotas sob `/share/[id]` com incrementadores assíncronos e controle de sessão por cookie.      |
+| Módulo                     | Funcionalidades                                                                                             | Detalhes Técnicos                                                                                                       |
+| :------------------------- | :---------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------- |
+| **📝 Editor Formulário**   | • Abas categorizadas<br/>• Drag & Drop reordering<br/>• Preenchimento dinâmico                              | Formulário reativo com `@dnd-kit/sortable` e estado gerenciado com validação Zod.                                       |
+| **📄 PDF Engine**          | • Preview instantâneo<br/>• Download direto em Blob<br/>• Temas de cores Hex<br/>• Modelos Clássico/Moderno | Desenvolvido com `@react-pdf/renderer` com suporte a múltiplos templates (1 e 2 colunas) sincronizados entre Web e PDF. |
+| **🌐 Internacionalização** | • Rotas `/pt` e `/en`<br/>• Versões vinculadas por `groupId`<br/>• Seletor dinâmico                         | Suporte completo via `next-intl` com sincronização automática do currículo no idioma correto.                           |
+| **🔗 Links Públicos**      | • Slugs curtos e amigáveis<br/>• Métricas de `views` e `downloads`<br/>• Layout público limpo               | Rotas sob `/share/[id]` com incrementadores assíncronos e controle de sessão por cookie.                                |
 
 ---
 

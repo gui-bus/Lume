@@ -7,24 +7,35 @@ datasource db {
 }
 
 model User {
-  id      String   @id
-  email   String   @unique
-  name    String?
-  resumes Resume[]
+  id        String   @id
+  email     String   @unique
+  name      String?
+  onboarded Boolean  @default(false)
+  resumes   Resume[]
+  tags      Tag[]
 }
 
 model Resume {
-  id          String   @id @default(uuid())
-  title       String
-  content     Json
-  locale      String   @default("pt")
-  colorTheme  String   @default("#18181b")
-  views       Int      @default(0)
-  downloads   Int      @default(0)
-  userId      String?
-  user        User?    @relation(fields: [userId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String       @id @default(uuid())
+  title         String
+  content       Json
+  locale        String       @default("pt")
+  colorTheme    String       @default("#18181b")
+  templateId    String       @default("modern")
+  showQrCode    Boolean      @default(false)
+  passwordHash  String?
+  expiresAt     DateTime?
+  maxViews      Int?
+  sectionsOrder String[]     @default(["summary", "experiences", "educations", "skills", "projects", "languages", "certifications", "volunteering", "courses"])
+  tagsOrder     String[]     @default([])
+  views         Int          @default(0)
+  downloads     Int          @default(0)
+  userId        String?
+  user          User?        @relation(fields: [userId], references: [id])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  shareEvents   ShareEvent[]
+  tags          Tag[]
 
   groupId String
   slug    String?  @unique
@@ -32,3 +43,28 @@ model Resume {
   @@unique([groupId, locale])
   @@index([userId])
 }
+
+model ShareEvent {
+  id        String   @id @default(uuid())
+  resumeId  String
+  resume    Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  type      String
+  createdAt DateTime @default(now())
+  userAgent String?
+  referer   String?
+
+  @@index([resumeId, createdAt])
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String
+  color     String   @default("#3b82f6")
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resumes   Resume[]
+  createdAt DateTime @default(now())
+
+  @@unique([userId, name])
+}
+
