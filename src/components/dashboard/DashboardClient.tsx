@@ -774,7 +774,18 @@ export function DashboardClient({
                   >
                     {t("dashboard.filterTag")}
                   </option>
-                  {allUserTags.map((tag) => (
+                  {(activeTab === "resumes"
+                    ? allUserTags.filter((tag) =>
+                        resumes.some((r) =>
+                          r.tags.some((t) => t.id === tag.id),
+                        ),
+                      )
+                    : allUserTags.filter((tag) =>
+                        coverLetters.some((l) =>
+                          l.tags.some((t: any) => t.id === tag.id),
+                        ),
+                      )
+                  ).map((tag) => (
                     <option
                       key={tag.id}
                       value={tag.id}
