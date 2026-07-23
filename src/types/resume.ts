@@ -17,6 +17,7 @@ export interface Experience {
   endDate?: string;
   current: boolean;
   description?: string;
+  featured?: boolean;
 }
 
 export interface Education {
@@ -32,6 +33,7 @@ export interface Project {
   github?: string;
   deploy?: string;
   description?: string;
+  featured?: boolean;
 }
 
 export interface Language {
@@ -63,6 +65,20 @@ export interface Course {
   current: boolean;
 }
 
+export interface CustomSectionItem {
+  id: string;
+  title: string;
+  description?: string;
+  date?: string;
+  featured?: boolean;
+}
+
+export interface CustomSection {
+  id: string;
+  title: string;
+  items: CustomSectionItem[];
+}
+
 export interface ResumeData {
   personalInfo: PersonalInfo;
   experiences: Experience[];
@@ -73,4 +89,5 @@ export interface ResumeData {
   certifications: Certification[];
   volunteering: Volunteer[];
   courses: Course[];
+  customSections?: CustomSection[];
 }

@@ -2,10 +2,19 @@
 
 import { saveResume } from "@/app/actions/resumeActions";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { useFormHistory } from "@/hooks/useFormHistory";
+import { ArrowCounterClockwise, ArrowClockwise } from "@phosphor-icons/react";
 import { useDebounce } from "@/hooks/use-debounce";
 import { cn } from "@/lib/utils";
 import { ResumeSchema } from "@/lib/validations/resume-schema";
@@ -46,16 +55,19 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 import { parseAsInteger, useQueryState } from "nuqs";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
 interface ResumeFormProps {
   initialData: ResumeData;
   resumeId?: string;
   groupId?: string;
+  resumeLocale: string;
+  onChangeResumeLocale: (locale: string) => void;
   onDataChange: (data: ResumeData) => void;
   onIdGenerated: (id: string, groupId: string) => void;
   downloadButton?: React.ReactNode;
+  sectionsOrder?: string[];
 }
 
 const defaultValues: ResumeData = {
@@ -136,9 +148,12 @@ export function ResumeForm({
   initialData,
   resumeId,
   groupId,
+  resumeLocale,
+  onChangeResumeLocale,
   onDataChange,
   onIdGenerated,
   downloadButton,
+  sectionsOrder,
 }: ResumeFormProps) {
   const t = useTranslations("common");
   const locale = useLocale();
@@ -171,12 +186,39 @@ export function ResumeForm({
     mode: "onChange",
   });
 
+  const { pushState, undo, redo, canUndo, canRedo } =
+    useFormHistory<ResumeData>(initialData);
+
   const watchedData = watch();
   const debouncedData = useDebounce(watchedData, 500);
+
+  const completionPercentage = useMemo(() => {
+    let score = 15;
+    if (watchedData.personalInfo?.name) score += 15;
+    if (watchedData.personalInfo?.email) score += 10;
+    if (watchedData.personalInfo?.phone) score += 10;
+    if (
+      watchedData.personalInfo?.summary &&
+      watchedData.personalInfo.summary.length > 20
+    )
+      score += 15;
+    if (watchedData.experiences && watchedData.experiences.length > 0)
+      score += 15;
+    if (watchedData.educations && watchedData.educations.length > 0)
+      score += 10;
+    if (watchedData.skills && watchedData.skills.length >= 2) score += 10;
+    return Math.min(score, 100);
+  }, [watchedData]);
 
   const lastEmittedRef = useRef<string>(JSON.stringify(initialData));
   const lastSavedRef = useRef<string>(JSON.stringify(initialData));
   const latestDataRef = useRef<ResumeData>(watchedData);
+
+  useEffect(() => {
+    if (debouncedData) {
+      pushState(debouncedData);
+    }
+  }, [debouncedData, pushState]);
 
   useEffect(() => {
     const currentInitialStr = JSON.stringify(initialData);
@@ -217,8 +259,15 @@ export function ResumeForm({
           resumeId,
           debouncedData,
           debouncedData.personalInfo.name || t("myResume"),
-          locale,
+          resumeLocale,
           groupId,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          sectionsOrder,
         );
 
         lastSavedRef.current = currentStr;
@@ -234,7 +283,57 @@ export function ResumeForm({
     };
 
     performSave();
-  }, [debouncedData, resumeId, groupId, locale, onIdGenerated, t]);
+  }, [debouncedData, resumeId, groupId, resumeLocale, onIdGenerated, t]);
+
+  const handleUndo = useCallback(() => {
+    const prevState = undo();
+    if (prevState) {
+      reset(prevState);
+      toast.success("Ação desfeita!");
+    }
+  }, [undo, reset]);
+
+  const handleRedo = useCallback(() => {
+    const nextState = redo();
+    if (nextState) {
+      reset(nextState);
+      toast.success("Ação refeita!");
+    }
+  }, [redo, reset]);
+
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeys = (e: KeyboardEvent) => {
+      if (e.altKey) {
+        if (e.key.toLowerCase() === "z") {
+          e.preventDefault();
+          handleUndo();
+        }
+        if (e.key.toLowerCase() === "y") {
+          e.preventDefault();
+          handleRedo();
+        }
+        if (e.key >= "1" && e.key <= "6") {
+          e.preventDefault();
+          setActiveStep(Number(e.key) - 1);
+        }
+      }
+      if (e.key === "?") {
+        const activeEl = document.activeElement;
+        if (
+          activeEl &&
+          (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA")
+        ) {
+          return;
+        }
+        e.preventDefault();
+        setIsHelpOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeys);
+    return () => window.removeEventListener("keydown", handleKeys);
+  }, [handleUndo, handleRedo, setActiveStep]);
 
   useEffect(() => {
     return () => {
@@ -244,12 +343,19 @@ export function ResumeForm({
           resumeId,
           latestDataRef.current,
           latestDataRef.current.personalInfo.name || "Resume",
-          locale,
+          resumeLocale,
           groupId,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          sectionsOrder,
         );
       }
     };
-  }, [resumeId, groupId, locale]);
+  }, [resumeId, groupId, resumeLocale]);
 
   const {
     fields: expFields,
@@ -327,6 +433,38 @@ export function ResumeForm({
           </motion.div>
         )}
       </AnimatePresence>
+
+      <div className="px-4 py-2 bg-card/60 border-b border-border/40 flex items-center justify-between gap-4 shrink-0 text-sm">
+        <div className="flex items-center gap-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsHelpOpen(true)}
+            className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground font-extrabold"
+            title="Ajuda de Atalhos (?)"
+          >
+            ?
+          </Button>
+        </div>
+
+        <div className="flex items-center gap-3 flex-1 max-w-[240px]">
+          <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground whitespace-nowrap">
+            Completude
+          </span>
+          <div className="w-full bg-muted/40 h-2.5 rounded-full border border-border/30 overflow-hidden relative">
+            <motion.div
+              className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full"
+              initial={{ width: "15%" }}
+              animate={{ width: `${completionPercentage}%` }}
+              transition={{ type: "spring", stiffness: 100 }}
+            />
+          </div>
+          <span className="text-[10px] font-black text-primary select-none">
+            {completionPercentage}%
+          </span>
+        </div>
+      </div>
 
       <div className="px-4 pt-6 pb-4 border-b bg-muted/5 shrink-0 relative">
         <div className="absolute top-0 left-0 w-full h-[3px] bg-muted/30 overflow-hidden">
@@ -420,6 +558,38 @@ export function ResumeForm({
             </div>
             {activeStep === 0 && (
               <div className="space-y-8">
+                <div className="space-y-2.5">
+                  <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    {t("editor.printLanguage")}
+                  </Label>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      onClick={() => onChangeResumeLocale("pt")}
+                      className={cn(
+                        "flex-1 h-12 rounded-xl font-bold transition-all border",
+                        resumeLocale === "pt"
+                          ? "bg-primary text-white border-primary"
+                          : "bg-muted/10 border-border/40 text-muted-foreground hover:bg-muted/20",
+                      )}
+                    >
+                      {t("dashboard.langPt")}
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => onChangeResumeLocale("en")}
+                      className={cn(
+                        "flex-1 h-12 rounded-xl font-bold transition-all border",
+                        resumeLocale === "en"
+                          ? "bg-primary text-white border-primary"
+                          : "bg-muted/10 border-border/40 text-muted-foreground hover:bg-muted/20",
+                      )}
+                    >
+                      {t("dashboard.langEn")}
+                    </Button>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2.5">
                     <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
@@ -1592,6 +1762,40 @@ export function ResumeForm({
           <CaretRight weight="duotone" />
         </Button>
       </div>
+
+      <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
+        <DialogContent className="rounded-3xl border-border/40 max-w-md w-full p-6">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black tracking-tight">
+              Atalhos de Teclado
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex items-center justify-between border-b border-border/40 pb-2">
+              <span className="text-sm font-semibold">
+                Ir para aba de Perfil
+              </span>
+              <kbd className="bg-muted px-2 py-1 rounded text-xs font-bold border border-border/40">
+                Alt + 1
+              </kbd>
+            </div>
+            <div className="flex items-center justify-between border-b border-border/40 pb-2">
+              <span className="text-sm font-semibold">Ir para aba Extras</span>
+              <kbd className="bg-muted px-2 py-1 rounded text-xs font-bold border border-border/40">
+                Alt + 6
+              </kbd>
+            </div>
+            <div className="flex items-center justify-between pb-2">
+              <span className="text-sm font-semibold">
+                Abrir barra de comandos
+              </span>
+              <kbd className="bg-muted px-2 py-1 rounded text-xs font-bold border border-border/40">
+                Alt + K / Ctrl + K
+              </kbd>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

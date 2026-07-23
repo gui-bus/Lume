@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { getMessages, getTranslations } from "next-intl/server";
 import { Geist, Geist_Mono, Manrope } from "next/font/google";
 import { notFound } from "next/navigation";
+import { CommandPalette } from "@/components/navigation/CommandPalette";
 import "../globals.css";
 
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-sans" });
@@ -50,11 +51,20 @@ export async function generateMetadata({
       siteName: t("title"),
       locale: locale,
       type: "website",
+      images: [
+        {
+          url: `/api/og/default`,
+          width: 1200,
+          height: 630,
+          alt: t("title"),
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: t("seo.ogTitle"),
       description: t("seo.ogDescription"),
+      images: [`/api/og/default`],
     },
     robots: {
       index: true,
@@ -83,6 +93,7 @@ export default async function RootLayout({
       lang={locale}
       suppressHydrationWarning
       className={cn(
+        "dark",
         "h-full",
         "antialiased",
         geistSans.variable,
@@ -94,6 +105,7 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col transition-colors duration-500 ease-in-out w-full max-w-440 mx-auto">
         <Providers messages={messages} locale={locale}>
           {children}
+          <CommandPalette />
         </Providers>
       </body>
     </html>
