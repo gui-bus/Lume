@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
 } from "@react-pdf/renderer";
 
 Font.register({
@@ -28,697 +27,579 @@ Font.registerHyphenationCallback((word) => [word]);
 
 const PX = 0.75;
 
-const commonStyles = StyleSheet.create({
-  qrContainer: {
-    position: "absolute",
-    bottom: 20 * PX,
-    right: 20 * PX,
+const styles = StyleSheet.create({
+  page: {
+    paddingTop: "25mm",
+    paddingLeft: "25mm",
+    paddingRight: "25mm",
+    paddingBottom: "15mm",
+    backgroundColor: "#FFFFFF",
+    fontFamily: "Roboto",
+    color: "#1e293b",
+  },
+
+  header: {
+    marginBottom: 24 * PX,
+  },
+  name: {
+    fontSize: 28 * PX,
+    fontWeight: "bold",
+    letterSpacing: -0.5,
+    marginBottom: 6 * PX,
+  },
+  contactRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    gap: 2,
+    marginBottom: 8 * PX,
+  },
+  contactText: {
+    fontSize: 11 * PX,
+    color: "#475569",
+  },
+  contactTextMain: {
+    fontSize: 11 * PX,
+    color: "#0f172a",
+  },
+  bullet: {
+    fontSize: 11 * PX,
+    color: "#cbd5e1",
+    marginHorizontal: 4 * PX,
+  },
+  link: {
+    fontSize: 11 * PX,
+    color: "#2563eb",
+    textDecoration: "none",
+    fontWeight: "bold",
+  },
+  linkSmall: {
+    fontSize: 9 * PX,
+    color: "#2563eb",
+    textDecoration: "none",
+    fontWeight: "bold",
+  },
+  summary: {
+    fontSize: 12 * PX,
+    lineHeight: 1.5,
+    color: "#475569",
+    marginTop: 8 * PX,
+  },
+
+  sectionTitleContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6 * PX,
+    gap: 12 * PX,
+    marginBottom: 16 * PX,
+    marginTop: 4 * PX,
   },
-  qrImage: {
-    width: 45 * PX,
-    height: 45 * PX,
+  sectionTitle: {
+    fontSize: 10 * PX,
+    fontWeight: "bold",
+    textTransform: "uppercase",
+    letterSpacing: 1.5,
   },
-  qrText: {
-    fontSize: 7 * PX,
+  sectionLine: {
+    flex: 1,
+    height: 0.5 * PX,
+    backgroundColor: "#e2e8f0",
+  },
+
+  item: {
+    marginBottom: 18 * PX,
+  },
+  itemHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "baseline",
+    marginBottom: 2 * PX,
+  },
+  itemTitle: {
+    fontSize: 14 * PX,
+    fontWeight: "bold",
+    color: "#0f172a",
+  },
+  itemDate: {
+    fontSize: 10 * PX,
+    fontWeight: "bold",
     color: "#64748b",
-    maxWidth: 70 * PX,
+    textTransform: "uppercase",
+  },
+  itemSubHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 4 * PX,
+  },
+  company: {
+    fontSize: 13 * PX,
+    fontWeight: "bold",
+    color: "#334155",
+  },
+  location: {
+    fontSize: 10 * PX,
+    color: "#64748b",
+  },
+  description: {
+    fontSize: 12 * PX,
+    lineHeight: 1.5,
+    color: "#475569",
+    marginTop: 4 * PX,
+  },
+
+  skillsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6 * PX,
+    marginBottom: 24 * PX,
+  },
+  skillTag: {
+    fontSize: 10 * PX,
+    fontWeight: "bold",
+    backgroundColor: "#f8fafc",
+    borderWidth: 0.5 * PX,
+    borderColor: "#e2e8f0",
+    padding: "2 6",
+    borderRadius: 4 * PX,
+    color: "#475569",
+  },
+
+  languageItem: {
+    flexDirection: "row",
+    gap: 6 * PX,
+    alignItems: "center",
+    marginBottom: 6 * PX,
+  },
+  langName: {
+    fontSize: 11 * PX,
+    fontWeight: "bold",
+    color: "#1e293b",
+    textTransform: "uppercase",
+  },
+  langLevel: {
+    fontSize: 10 * PX,
+    color: "#475569",
+    fontWeight: "bold",
+  },
+
+  projectHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 4 * PX,
   },
 });
 
-const translateLevel = (level: string, labels: any) => {
-  const map: Record<string, keyof typeof labels.langLevels> = {
-    Básico: "basico",
-    Intermediário: "intermediario",
-    Avançado: "avancado",
-    Fluente: "fluente",
-    Nativo: "nativo",
-  };
-  const key = map[level] || "basico";
-  return labels.langLevels[key];
-};
-
-const getLevelDots = (level: string) => {
-  const dots = [];
-  const map: Record<string, number> = {
-    Básico: 1,
-    Basic: 1,
-    Intermediário: 2,
-    Intermediate: 2,
-    Avançado: 3,
-    Advanced: 3,
-    Fluente: 4,
-    Fluent: 4,
-    Nativo: 5,
-    Native: 5,
-  };
-  const activeCount = map[level] || 1;
-  for (let i = 1; i <= 5; i++) {
-    dots.push(
-      <View
-        key={i}
-        style={{
-          width: 5 * PX,
-          height: 5 * PX,
-          borderRadius: 2.5 * PX,
-          backgroundColor: i <= activeCount ? "#2563eb" : "#e2e8f0",
-          marginLeft: 2 * PX,
-        }}
-      />,
-    );
-  }
-  return (
-    <View style={{ flexDirection: "row", alignItems: "center" }}>{dots}</View>
-  );
-};
-
-const getRelativeOrder = (defaultOrder: string[], sectionsOrder?: string[]) => {
-  if (!sectionsOrder) return defaultOrder;
-  return defaultOrder.slice().sort((a, b) => {
-    const idxA = sectionsOrder.indexOf(a);
-    const idxB = sectionsOrder.indexOf(b);
-    if (idxA === -1 && idxB === -1) return 0;
-    if (idxA === -1) return 1;
-    if (idxB === -1) return -1;
-    return idxA - idxB;
-  });
-};
-
-const getFullOrder = (defaultOrder: string[], sectionsOrder?: string[]) => {
-  if (!sectionsOrder) return defaultOrder;
-  const combined = [...sectionsOrder];
-  defaultOrder.forEach((sec) => {
-    if (!combined.includes(sec)) combined.push(sec);
-  });
-  return combined;
-};
-
-const ModernTemplate = ({
+export const ResumePDF = ({
   data,
-  colorTheme,
+  colorTheme = "#18181b",
   labels,
-  qrCodeDataUrl,
   sectionsOrder,
 }: {
   data: ResumeData;
-  colorTheme: string;
-  labels: any;
-  qrCodeDataUrl?: string;
+  colorTheme?: string;
   sectionsOrder?: string[];
-}) => {
-  const styles = StyleSheet.create({
-    page: {
-      padding: "20mm",
-      backgroundColor: "#FFFFFF",
-      fontFamily: "Roboto",
-      color: "#1e293b",
-      flexDirection: "row",
-      gap: 20 * PX,
-    },
-    leftCol: {
-      width: "30%",
-      borderRight: 0.5 * PX,
-      borderColor: "#e2e8f0",
-      paddingRight: 15 * PX,
-    },
-    rightCol: {
-      width: "70%",
-      paddingLeft: 5 * PX,
-    },
-    name: {
-      fontSize: 24 * PX,
-      fontWeight: "bold",
-      letterSpacing: -0.5,
-      marginBottom: 4 * PX,
-      color: colorTheme,
-      textTransform: "uppercase",
-    },
-    summary: {
-      fontSize: 10.5 * PX,
-      lineHeight: 1.5,
-      color: "#475569",
-      marginBottom: 15 * PX,
-    },
-    sidebarTitle: {
-      fontSize: 9 * PX,
-      fontWeight: "bold",
-      textTransform: "uppercase",
-      letterSpacing: 1.2,
-      color: colorTheme,
-      marginBottom: 10 * PX,
-      marginTop: 15 * PX,
-    },
-    contactText: {
-      fontSize: 9 * PX,
-      color: "#475569",
-      marginBottom: 5 * PX,
-    },
-    link: {
-      fontSize: 9 * PX,
-      color: "#2563eb",
-      textDecoration: "none",
-      fontWeight: "bold",
-      marginBottom: 5 * PX,
-    },
-    sectionTitle: {
-      fontSize: 11 * PX,
-      fontWeight: "bold",
-      textTransform: "uppercase",
-      letterSpacing: 1.2,
-      color: colorTheme,
-      marginBottom: 10 * PX,
-      marginTop: 12 * PX,
-      borderBottom: 0.5 * PX,
-      borderColor: "#e2e8f0",
-      paddingBottom: 4 * PX,
-    },
-    item: {
-      marginBottom: 12 * PX,
-    },
-    itemHeader: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "baseline",
-    },
-    itemTitle: {
-      fontSize: 11 * PX,
-      fontWeight: "bold",
-      color: "#0f172a",
-    },
-    itemCompany: {
-      fontSize: 10 * PX,
-      fontWeight: "bold",
-      color: "#475569",
-    },
-    itemDate: {
-      fontSize: 9 * PX,
-      color: "#64748b",
-    },
-    description: {
-      fontSize: 9.5 * PX,
-      lineHeight: 1.4,
-      color: "#475569",
-      marginTop: 2 * PX,
-    },
-    badge: {
-      fontSize: 9 * PX,
-      padding: "2 6",
-      backgroundColor: "#f1f5f9",
-      borderRadius: 4 * PX,
-      marginRight: 4 * PX,
-      marginBottom: 4 * PX,
-      color: "#475569",
-    },
-  });
-
-  const rightColDefault = [
-    "summary",
-    "experiences",
-    "educations",
-    "projects",
-    "customSections",
-  ];
-  const rightOrder = getRelativeOrder(rightColDefault, sectionsOrder);
-
-  const sectionsMap: Record<string, React.ReactNode> = {
-    summary: data.personalInfo.summary ? (
-      <Text key="summary" style={styles.summary}>
-        {data.personalInfo.summary}
-      </Text>
-    ) : null,
-    experiences:
-      data.experiences && data.experiences.length > 0 ? (
-        <View key="experiences">
-          <Text style={styles.sectionTitle}>{labels.experience}</Text>
-          {data.experiences.map((exp, i) => (
-            <View key={i} style={styles.item} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>
-                  {exp.featured ? "⭐ " : ""}
-                  {exp.position}
-                </Text>
-                <Text style={styles.itemDate}>
-                  {exp.startDate} - {exp.current ? labels.current : exp.endDate}
-                </Text>
-              </View>
-              <Text style={styles.itemCompany}>
-                {exp.company} {exp.location ? `| ${exp.location}` : ""}
-              </Text>
-              {exp.description && (
-                <Text style={styles.description}>{exp.description}</Text>
-              )}
-            </View>
-          ))}
-        </View>
-      ) : null,
-    educations:
-      data.educations && data.educations.length > 0 ? (
-        <View key="educations">
-          <Text style={styles.sectionTitle}>{labels.education}</Text>
-          {data.educations.map((edu, i) => (
-            <View key={i} style={styles.item} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>{edu.school}</Text>
-                <Text style={styles.itemDate}>{edu.graduationDate}</Text>
-              </View>
-              <Text style={styles.itemCompany}>
-                {edu.degree} em {edu.field}
-              </Text>
-            </View>
-          ))}
-        </View>
-      ) : null,
-    projects:
-      data.projects && data.projects.length > 0 ? (
-        <View key="projects">
-          <Text style={styles.sectionTitle}>{labels.projects}</Text>
-          {data.projects.map((proj, i) => (
-            <View key={i} style={styles.item} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>
-                  {proj.featured ? "⭐ " : ""}
-                  {proj.name}
-                </Text>
-                <View style={{ flexDirection: "row", gap: 6 * PX }}>
-                  {proj.github && (
-                    <Link style={styles.link} src={proj.github}>
-                      {labels.repo}
-                    </Link>
-                  )}
-                  {proj.deploy && (
-                    <Link style={styles.link} src={proj.deploy}>
-                      {labels.demo}
-                    </Link>
-                  )}
-                </View>
-              </View>
-              {proj.description && (
-                <Text style={styles.description}>{proj.description}</Text>
-              )}
-            </View>
-          ))}
-        </View>
-      ) : null,
-    customSections:
-      data.customSections && data.customSections.length > 0 ? (
-        <View key="customSections">
-          {data.customSections.map((sec, i) => (
-            <View key={i}>
-              <Text style={styles.sectionTitle}>{sec.title}</Text>
-              {sec.items.map((item, j) => (
-                <View key={j} style={styles.item} wrap={false}>
-                  <View style={styles.itemHeader}>
-                    <Text style={styles.itemTitle}>
-                      {item.featured ? "⭐ " : ""}
-                      {item.title}
-                    </Text>
-                    {item.date && (
-                      <Text style={styles.itemDate}>{item.date}</Text>
-                    )}
-                  </View>
-                  {item.description && (
-                    <Text style={styles.description}>{item.description}</Text>
-                  )}
-                </View>
-              ))}
-            </View>
-          ))}
-        </View>
-      ) : null,
+  labels: {
+    title: string;
+    yourName: string;
+    portfolio: string;
+    experience: string;
+    education: string;
+    skills: string;
+    languages: string;
+    certifications: string;
+    projects: string;
+    volunteering: string;
+    courses: string;
+    current: string;
+    at: string;
+    repo: string;
+    demo: string;
+    langLabels: {
+      conversation: string;
+      writing: string;
+      reading: string;
+    };
+    langLevels: {
+      basico: string;
+      intermediario: string;
+      avancado: string;
+      fluente: string;
+      nativo: string;
+    };
   };
-
-  return (
-    <Page size="A4" style={styles.page}>
-      <View style={styles.leftCol}>
-        <Text style={styles.sidebarTitle}>Contato</Text>
-        {data.personalInfo.email && (
-          <Link style={styles.link} src={`mailto:${data.personalInfo.email}`}>
-            {data.personalInfo.email}
-          </Link>
-        )}
-        {data.personalInfo.phone && (
-          <Text style={styles.contactText}>{data.personalInfo.phone}</Text>
-        )}
-        {data.personalInfo.location && (
-          <Text style={styles.contactText}>{data.personalInfo.location}</Text>
-        )}
-        {data.personalInfo.linkedin && (
-          <Link style={styles.link} src={data.personalInfo.linkedin}>
-            LinkedIn
-          </Link>
-        )}
-        {data.personalInfo.github && (
-          <Link style={styles.link} src={data.personalInfo.github}>
-            GitHub
-          </Link>
-        )}
-        {data.personalInfo.website && (
-          <Link style={styles.link} src={data.personalInfo.website}>
-            Portfólio
-          </Link>
-        )}
-
-        {data.skills && data.skills.length > 0 && (
-          <View>
-            <Text style={styles.sidebarTitle}>{labels.skills}</Text>
-            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-              {data.skills.map((s, i) => (
-                <Text key={i} style={styles.badge}>
-                  {s}
-                </Text>
-              ))}
-            </View>
-          </View>
-        )}
-
-        {data.languages && data.languages.length > 0 && (
-          <View>
-            <Text style={styles.sidebarTitle}>{labels.languages}</Text>
-            {data.languages.map((l, i) => (
-              <View key={i} style={{ marginBottom: 6 * PX }}>
-                <Text style={{ fontSize: 9 * PX, fontWeight: "bold" }}>
-                  {l.name}
-                </Text>
-                <Text style={{ fontSize: 7 * PX, color: "#64748b" }}>
-                  {labels.langLabels.conversation}:{" "}
-                  {translateLevel(l.conversation, labels)}
-                </Text>
-              </View>
-            ))}
-          </View>
-        )}
-      </View>
-
-      <View style={styles.rightCol}>
-        <Text style={styles.name}>
-          {data.personalInfo.name || labels.yourName}
-        </Text>
-        {rightOrder.map((key) => sectionsMap[key])}
-      </View>
-
-      {qrCodeDataUrl && (
-        <View style={commonStyles.qrContainer} wrap={false}>
-          <Text style={commonStyles.qrText}>
-            {labels?.qrCodeLabel || "Acesse a versão digital do meu perfil"}
-          </Text>
-          <Image src={qrCodeDataUrl} style={commonStyles.qrImage} />
-        </View>
-      )}
-    </Page>
-  );
-};
-
-const ClassicTemplate = ({
-  data,
-  colorTheme,
-  labels,
-  qrCodeDataUrl,
-  sectionsOrder,
-}: {
-  data: ResumeData;
-  colorTheme: string;
-  labels: any;
-  qrCodeDataUrl?: string;
-  sectionsOrder?: string[];
 }) => {
-  const styles = StyleSheet.create({
-    page: {
-      paddingTop: "20mm",
-      paddingLeft: "20mm",
-      paddingRight: "20mm",
-      paddingBottom: "15mm",
-      backgroundColor: "#FFFFFF",
-      fontFamily: "Roboto",
-      color: "#1e293b",
-    },
-    header: {
-      alignItems: "center",
-      marginBottom: 20 * PX,
-    },
-    name: {
-      fontSize: 26 * PX,
-      fontWeight: "bold",
-      color: colorTheme,
-      textTransform: "uppercase",
-      marginBottom: 6 * PX,
-    },
-    contactRow: {
-      flexDirection: "row",
-      flexWrap: "wrap",
-      justifyContent: "center",
-      gap: 6 * PX,
-      fontSize: 9.5 * PX,
-      color: "#475569",
-    },
-    link: {
-      color: "#2563eb",
-      textDecoration: "none",
-      fontWeight: "bold",
-    },
-    summary: {
-      fontSize: 10.5 * PX,
-      lineHeight: 1.5,
-      color: "#475569",
-      marginBottom: 15 * PX,
-      textAlign: "justify",
-    },
-    sectionTitleContainer: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 10 * PX,
-      marginBottom: 10 * PX,
-      marginTop: 15 * PX,
-    },
-    sectionTitle: {
-      fontSize: 10 * PX,
-      fontWeight: "bold",
-      textTransform: "uppercase",
-      letterSpacing: 1.5,
-      color: colorTheme,
-    },
-    sectionLine: {
-      flex: 1,
-      height: 0.5 * PX,
-      backgroundColor: "#cbd5e1",
-    },
-    item: {
-      marginBottom: 12 * PX,
-    },
-    itemHeader: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "baseline",
-    },
-    itemTitle: {
-      fontSize: 12 * PX,
-      fontWeight: "bold",
-      color: "#0f172a",
-    },
-    itemSubtitle: {
-      fontSize: 10.5 * PX,
-      fontWeight: "bold",
-      color: "#475569",
-      marginTop: 2 * PX,
-    },
-    itemDate: {
-      fontSize: 9 * PX,
-      color: "#64748b",
-      fontWeight: "bold",
-      textTransform: "uppercase",
-    },
-    description: {
-      fontSize: 10 * PX,
-      lineHeight: 1.4,
-      color: "#475569",
-      marginTop: 4 * PX,
-    },
-    skillsText: {
-      fontSize: 10 * PX,
-      color: "#475569",
-      lineHeight: 1.5,
-    },
-  });
+  const {
+    personalInfo,
+    experiences,
+    educations,
+    skills,
+    projects,
+    languages,
+    certifications,
+    volunteering,
+    courses,
+  } = data;
+
+  const translateLevel = (level: string) => {
+    const map: Record<string, keyof typeof labels.langLevels> = {
+      Básico: "basico",
+      Intermediário: "intermediario",
+      Avançado: "avancado",
+      Fluente: "fluente",
+      Nativo: "nativo",
+    };
+    const key = map[level] || "basico";
+    return labels.langLevels[key];
+  };
 
   const renderSectionTitle = (title: string) => (
     <View style={styles.sectionTitleContainer} wrap={false}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <Text style={[styles.sectionTitle, { color: colorTheme }]}>{title}</Text>
       <View style={styles.sectionLine} />
     </View>
   );
 
-  const defaultOrder = [
-    "summary",
-    "experiences",
-    "educations",
-    "skills",
-    "projects",
-    "languages",
-    "certifications",
-    "volunteering",
-    "courses",
-    "customSections",
-  ];
-  const order = getFullOrder(defaultOrder, sectionsOrder);
-
-  const sectionsMap: Record<string, React.ReactNode> = {
-    summary: data.personalInfo.summary ? (
+  const sectionRenderers: Record<string, React.ReactNode> = {
+    summary: personalInfo.summary ? (
       <Text key="summary" style={styles.summary}>
-        {data.personalInfo.summary}
+        {personalInfo.summary}
       </Text>
     ) : null,
     experiences:
-      data.experiences && data.experiences.length > 0 ? (
-        <View key="experiences">
+      experiences?.length > 0 ? (
+        <View key="experiences" style={{ marginBottom: 10 * PX }}>
           {renderSectionTitle(labels.experience)}
-          {data.experiences.map((exp, i) => (
-            <View key={i} style={styles.item} wrap={false}>
+          {experiences.map((exp, i) => (
+            <View
+              key={i}
+              style={[
+                styles.item,
+                i === experiences.length - 1 ? { marginBottom: 0 } : {},
+              ]}
+              wrap={false}
+            >
               <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>
-                  {exp.featured ? "⭐ " : ""}
-                  {exp.position}
-                </Text>
+                <View style={{ flexDirection: "row", alignItems: "baseline" }}>
+                  <Text
+                    style={[styles.itemTitle, { textTransform: "uppercase" }]}
+                  >
+                    {exp.company}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 12 * PX,
+                      color: "#475569",
+                      fontWeight: "bold",
+                      marginLeft: 4 * PX,
+                    }}
+                  >
+                    — {exp.position}
+                  </Text>
+                </View>
                 <Text style={styles.itemDate}>
-                  {exp.startDate} - {exp.current ? labels.current : exp.endDate}
+                  {exp.startDate} — {exp.current ? labels.current : exp.endDate}
                 </Text>
               </View>
-              <Text style={styles.itemSubtitle}>
-                {exp.company} {exp.location ? `| ${exp.location}` : ""}
-              </Text>
+              {exp.location && (
+                <Text style={[styles.location, { marginBottom: 2 * PX }]}>
+                  {exp.location}
+                </Text>
+              )}
               {exp.description && (
-                <Text style={styles.description}>{exp.description}</Text>
+                <Text style={styles.description}>
+                  {exp.description.replace(/[*-]/g, "•")}
+                </Text>
               )}
             </View>
           ))}
         </View>
       ) : null,
     educations:
-      data.educations && data.educations.length > 0 ? (
-        <View key="educations">
+      educations?.length > 0 ? (
+        <View key="educations" style={{ marginBottom: 10 * PX }}>
           {renderSectionTitle(labels.education)}
-          {data.educations.map((edu, i) => (
-            <View key={i} style={styles.item} wrap={false}>
+          {educations.map((edu, i) => (
+            <View
+              key={i}
+              style={{
+                marginBottom: i === educations.length - 1 ? 0 : 12 * PX,
+              }}
+              wrap={false}
+            >
               <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>{edu.school}</Text>
+                <View style={{ flexDirection: "row", alignItems: "baseline" }}>
+                  <Text
+                    style={[
+                      styles.itemTitle,
+                      { fontSize: 13 * PX, textTransform: "uppercase" },
+                    ]}
+                  >
+                    {edu.school}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 11 * PX,
+                      color: "#475569",
+                      fontWeight: "bold",
+                      marginLeft: 4 * PX,
+                    }}
+                  >
+                    | {edu.degree} — {edu.field}
+                  </Text>
+                </View>
                 <Text style={styles.itemDate}>{edu.graduationDate}</Text>
               </View>
-              <Text style={styles.itemSubtitle}>
-                {edu.degree} em {edu.field}
-              </Text>
-            </View>
-          ))}
-        </View>
-      ) : null,
-    skills:
-      data.skills && data.skills.length > 0 ? (
-        <View key="skills">
-          {renderSectionTitle(labels.skills)}
-          <Text style={styles.skillsText}>{data.skills.join(", ")}</Text>
-        </View>
-      ) : null,
-    projects:
-      data.projects && data.projects.length > 0 ? (
-        <View key="projects">
-          {renderSectionTitle(labels.projects)}
-          {data.projects.map((proj, i) => (
-            <View key={i} style={styles.item} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>
-                  {proj.featured ? "⭐ " : ""}
-                  {proj.name}
-                </Text>
-                <View style={{ flexDirection: "row", gap: 6 * PX }}>
-                  {proj.github && (
-                    <Link style={styles.link} src={proj.github}>
-                      {labels.repo}
-                    </Link>
-                  )}
-                  {proj.deploy && (
-                    <Link style={styles.link} src={proj.deploy}>
-                      {labels.demo}
-                    </Link>
-                  )}
-                </View>
-              </View>
-              {proj.description && (
-                <Text style={styles.description}>{proj.description}</Text>
-              )}
-            </View>
-          ))}
-        </View>
-      ) : null,
-    languages:
-      data.languages && data.languages.length > 0 ? (
-        <View key="languages">
-          {renderSectionTitle(labels.languages)}
-          <View
-            style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 * PX }}
-          >
-            {data.languages.map((l, i) => (
-              <View key={i} style={{ width: "30%" }}>
-                <Text style={{ fontSize: 10 * PX, fontWeight: "bold" }}>
-                  {l.name}
-                </Text>
-                <Text style={{ fontSize: 8 * PX, color: "#64748b" }}>
-                  {labels.langLabels.conversation}:{" "}
-                  {translateLevel(l.conversation, labels)}
-                </Text>
-              </View>
-            ))}
-          </View>
-        </View>
-      ) : null,
-    certifications:
-      data.certifications && data.certifications.length > 0 ? (
-        <View key="certifications">
-          {renderSectionTitle(labels.certifications || "Certificações")}
-          {data.certifications.map((cert, i) => (
-            <View key={i} style={styles.item} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>{cert.name}</Text>
-                <Text style={styles.itemDate}>{cert.date}</Text>
-              </View>
-              <Text style={styles.itemSubtitle}>{cert.issuer}</Text>
-            </View>
-          ))}
-        </View>
-      ) : null,
-    volunteering:
-      data.volunteering && data.volunteering.length > 0 ? (
-        <View key="volunteering">
-          {renderSectionTitle(labels.volunteering || "Voluntariado")}
-          {data.volunteering.map((vol, i) => (
-            <View key={i} style={styles.item} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>{vol.role}</Text>
-                <Text style={styles.itemDate}>
-                  {vol.startDate} - {vol.current ? labels.current : vol.endDate}
-                </Text>
-              </View>
-              <Text style={styles.itemSubtitle}>{vol.organization}</Text>
-              {vol.description && (
-                <Text style={styles.description}>{vol.description}</Text>
-              )}
             </View>
           ))}
         </View>
       ) : null,
     courses:
-      data.courses && data.courses.length > 0 ? (
-        <View key="courses">
-          {renderSectionTitle(labels.courses || "Cursos")}
-          {data.courses.map((course, i) => (
-            <View key={i} style={styles.item} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>{course.name}</Text>
-                {(course.startDate || course.endDate) && (
-                  <Text style={styles.itemDate}>
-                    {course.startDate ? course.startDate + " - " : ""}
-                    {course.current ? labels.current : course.endDate}
-                  </Text>
-                )}
+      courses?.length > 0 ? (
+        <View key="courses" style={{ marginBottom: 10 * PX }}>
+          {renderSectionTitle(labels.courses)}
+          <View
+            style={{
+              flexDirection: "row",
+              flexWrap: "wrap",
+            }}
+          >
+            {courses.map((c, i) => (
+              <View
+                key={i}
+                style={{
+                  width: "50%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "baseline",
+                  paddingRight: i % 2 === 0 ? 12 * PX : 0,
+                  paddingLeft: i % 2 !== 0 ? 12 * PX : 0,
+                  marginBottom: 4 * PX,
+                }}
+                wrap={false}
+              >
+                <Text
+                  style={[
+                    styles.itemTitle,
+                    {
+                      fontSize: 11 * PX,
+                      maxWidth: "65%",
+                    },
+                  ]}
+                >
+                  {c.name}
+                </Text>
+                <Text style={[styles.itemDate, { fontSize: 8 * PX }]}>
+                  {c.startDate && `${c.startDate} — `}
+                  {c.current ? labels.current : c.endDate}
+                </Text>
               </View>
+            ))}
+          </View>
+        </View>
+      ) : null,
+    skills:
+      skills?.length > 0 ? (
+        <View key="skills" style={{ marginBottom: 10 * PX }}>
+          {renderSectionTitle(labels.skills)}
+          <View style={[styles.skillsGrid, { marginBottom: 0 }]}>
+            {skills.map((s, i) => (
+              <Text key={i} style={styles.skillTag}>
+                {s}
+              </Text>
+            ))}
+          </View>
+        </View>
+      ) : null,
+    languages:
+      languages?.length > 0 ? (
+        <View key="languages" style={{ marginBottom: 10 * PX }}>
+          {renderSectionTitle(labels.languages)}
+          <View
+            style={{
+              flexDirection: "row",
+              flexWrap: "wrap",
+              gap: 20 * PX,
+            }}
+          >
+            {languages.map((l, i) => {
+              const getLevelDots = (level: string) => {
+                const levels = [
+                  "Básico",
+                  "Intermediário",
+                  "Avançado",
+                  "Fluente",
+                  "Nativo",
+                ];
+                const index = levels.indexOf(level) + 1;
+                return (
+                  <View style={{ flexDirection: "row", gap: 2 * PX }}>
+                    {[1, 2, 3, 4, 5].map((dot) => (
+                      <View
+                        key={dot}
+                        style={{
+                          width: 5 * PX,
+                          height: 5 * PX,
+                          borderRadius: 2.5 * PX,
+                          backgroundColor: dot <= index ? "#94a3b8" : "#f1f5f9",
+                        }}
+                      />
+                    ))}
+                  </View>
+                );
+              };
+
+              const renderLevelLine = (label: string, value: string) => (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: 2 * PX,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 7 * PX,
+                      fontWeight: "bold",
+                      color: "#94a3b8",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {label}
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 6 * PX,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 7 * PX,
+                        fontWeight: "bold",
+                        color: "#475569",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      {value}
+                    </Text>
+                    {getLevelDots(value)}
+                  </View>
+                </View>
+              );
+
+              return (
+                <View key={i} style={{ width: "45%" }} wrap={false}>
+                  <Text
+                    style={[
+                      styles.langName,
+                      { fontSize: 10 * PX, marginBottom: 4 * PX },
+                    ]}
+                  >
+                    {l.name}
+                  </Text>
+                  <View>
+                    {renderLevelLine(
+                      labels.langLabels.conversation,
+                      translateLevel(l.conversation),
+                    )}
+                    {renderLevelLine(
+                      labels.langLabels.writing,
+                      translateLevel(l.writing),
+                    )}
+                    {renderLevelLine(
+                      labels.langLabels.reading,
+                      translateLevel(l.reading),
+                    )}
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        </View>
+      ) : null,
+    certifications:
+      certifications?.length > 0 ? (
+        <View key="certifications" style={{ marginBottom: 10 * PX }}>
+          {renderSectionTitle(labels.certifications)}
+          {certifications.map((c, i) => (
+            <View
+              key={i}
+              style={{
+                marginBottom: i === certifications.length - 1 ? 0 : 12 * PX,
+              }}
+              wrap={false}
+            >
+              <View style={styles.itemHeader}>
+                <Text style={[styles.itemTitle, { fontSize: 12 * PX }]}>
+                  {c.name}
+                </Text>
+                <Text style={styles.itemDate}>{c.date}</Text>
+              </View>
+              <Text style={styles.company}>{c.issuer}</Text>
+            </View>
+          ))}
+        </View>
+      ) : null,
+    projects:
+      projects?.length > 0 ? (
+        <View key="projects" style={{ marginBottom: 10 * PX }}>
+          {renderSectionTitle(labels.projects)}
+          {projects.map((proj, i) => (
+            <View
+              key={i}
+              style={[
+                styles.item,
+                i === projects.length - 1 ? { marginBottom: 0 } : {},
+              ]}
+              wrap={false}
+            >
+              <View style={styles.projectHeader}>
+                <Text style={[styles.itemTitle, { fontSize: 13 * PX }]}>
+                  {proj.name}
+                </Text>
+                <View style={{ flexDirection: "row", gap: 12 * PX }}>
+                  {proj.github && (
+                    <Link style={styles.linkSmall} src={proj.github}>
+                      {labels.repo}
+                    </Link>
+                  )}
+                  {proj.deploy && (
+                    <Link style={styles.linkSmall} src={proj.deploy}>
+                      {labels.demo}
+                    </Link>
+                  )}
+                </View>
+              </View>
+              {proj.description && (
+                <Text style={styles.description}>{proj.description}</Text>
+              )}
+            </View>
+          ))}
+        </View>
+      ) : null,
+    volunteering:
+      volunteering?.length > 0 ? (
+        <View key="volunteering" style={{ marginBottom: 0 }}>
+          {renderSectionTitle(labels.volunteering)}
+          {volunteering.map((v, i) => (
+            <View
+              key={i}
+              style={{
+                marginBottom: i === volunteering.length - 1 ? 0 : 12 * PX,
+              }}
+              wrap={false}
+            >
+              <View style={styles.itemHeader}>
+                <Text style={[styles.itemTitle, { fontSize: 13 * PX }]}>
+                  {v.organization}
+                </Text>
+                <Text style={styles.itemDate}>{v.role}</Text>
+              </View>
+              {v.description && (
+                <Text style={styles.description}>{v.description}</Text>
+              )}
             </View>
           ))}
         </View>
@@ -727,7 +608,7 @@ const ClassicTemplate = ({
       data.customSections && data.customSections.length > 0 ? (
         <View key="customSections">
           {data.customSections.map((sec, i) => (
-            <View key={i}>
+            <View key={i} style={{ marginTop: 10 * PX }}>
               {renderSectionTitle(sec.title)}
               {sec.items.map((item, j) => (
                 <View key={j} style={styles.item} wrap={false}>
@@ -751,843 +632,88 @@ const ClassicTemplate = ({
       ) : null,
   };
 
-  return (
-    <Page size="A4" style={styles.page}>
-      <View style={styles.header}>
-        <Text style={styles.name}>
-          {data.personalInfo.name || labels.yourName}
-        </Text>
-        <View style={styles.contactRow}>
-          {data.personalInfo.email && (
-            <Link style={styles.link} src={`mailto:${data.personalInfo.email}`}>
-              {data.personalInfo.email}
-            </Link>
-          )}
-          {data.personalInfo.phone && (
-            <Text>&bull; {data.personalInfo.phone}</Text>
-          )}
-          {data.personalInfo.location && (
-            <Text>&bull; {data.personalInfo.location}</Text>
-          )}
-          {data.personalInfo.linkedin && (
-            <Link style={styles.link} src={data.personalInfo.linkedin}>
-              &bull; LinkedIn
-            </Link>
-          )}
-          {data.personalInfo.github && (
-            <Link style={styles.link} src={data.personalInfo.github}>
-              &bull; GitHub
-            </Link>
-          )}
-          {data.personalInfo.website && (
-            <Link style={styles.link} src={data.personalInfo.website}>
-              &bull; Portfólio
-            </Link>
-          )}
-        </View>
-      </View>
-
-      {order.map((key) => sectionsMap[key])}
-
-      {qrCodeDataUrl && (
-        <View style={commonStyles.qrContainer} wrap={false}>
-          <Text style={commonStyles.qrText}>
-            {labels?.qrCodeLabel || "Acesse a versão digital do meu perfil"}
-          </Text>
-          <Image src={qrCodeDataUrl} style={commonStyles.qrImage} />
-        </View>
-      )}
-    </Page>
-  );
-};
-const MinimalTemplate = ({
-  data,
-  colorTheme,
-  labels,
-  qrCodeDataUrl,
-  sectionsOrder,
-}: {
-  data: ResumeData;
-  colorTheme: string;
-  labels: any;
-  qrCodeDataUrl?: string;
-  sectionsOrder?: string[];
-}) => {
-  const styles = StyleSheet.create({
-    page: {
-      padding: "22mm",
-      backgroundColor: "#FFFFFF",
-      fontFamily: "Roboto",
-      color: "#27272a",
-    },
-    name: {
-      fontSize: 28 * PX,
-      fontWeight: "bold",
-      color: colorTheme,
-      letterSpacing: -0.8,
-      marginBottom: 8 * PX,
-    },
-    contactRow: {
-      flexDirection: "row",
-      flexWrap: "wrap",
-      gap: 8 * PX,
-      fontSize: 9 * PX,
-      color: "#71717a",
-      marginBottom: 20 * PX,
-    },
-    link: {
-      color: "#27272a",
-      textDecoration: "none",
-      fontWeight: "bold",
-    },
-    summary: {
-      fontSize: 10 * PX,
-      lineHeight: 1.6,
-      color: "#52525b",
-      marginBottom: 20 * PX,
-    },
-    sectionTitle: {
-      fontSize: 9 * PX,
-      fontWeight: "bold",
-      textTransform: "uppercase",
-      letterSpacing: 2.0,
-      color: colorTheme,
-      marginBottom: 8 * PX,
-      marginTop: 18 * PX,
-    },
-    item: {
-      marginBottom: 10 * PX,
-    },
-    itemHeader: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "baseline",
-    },
-    itemTitle: {
-      fontSize: 11 * PX,
-      fontWeight: "bold",
-      color: "#18181b",
-    },
-    itemSubtitle: {
-      fontSize: 9.5 * PX,
-      color: "#71717a",
-      marginTop: 1 * PX,
-    },
-    itemDate: {
-      fontSize: 8.5 * PX,
-      color: "#a1a1aa",
-    },
-    description: {
-      fontSize: 9.5 * PX,
-      lineHeight: 1.45,
-      color: "#52525b",
-      marginTop: 3 * PX,
-    },
-  });
-
   const defaultOrder = [
     "summary",
     "experiences",
     "educations",
+    "courses",
     "skills",
-    "projects",
     "languages",
     "certifications",
-    "volunteering",
-    "courses",
-    "customSections",
-  ];
-  const order = getFullOrder(defaultOrder, sectionsOrder);
-
-  const sectionsMap: Record<string, React.ReactNode> = {
-    summary: data.personalInfo.summary ? (
-      <Text key="summary" style={styles.summary}>
-        {data.personalInfo.summary}
-      </Text>
-    ) : null,
-    experiences:
-      data.experiences && data.experiences.length > 0 ? (
-        <View key="experiences">
-          <Text style={styles.sectionTitle}>{labels.experience}</Text>
-          {data.experiences.map((exp, i) => (
-            <View key={i} style={styles.item} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>
-                  {exp.featured ? "⭐ " : ""}
-                  {exp.position} em {exp.company}
-                </Text>
-                <Text style={styles.itemDate}>
-                  {exp.startDate} - {exp.current ? labels.current : exp.endDate}
-                </Text>
-              </View>
-              {exp.description && (
-                <Text style={styles.description}>{exp.description}</Text>
-              )}
-            </View>
-          ))}
-        </View>
-      ) : null,
-    educations:
-      data.educations && data.educations.length > 0 ? (
-        <View key="educations">
-          <Text style={styles.sectionTitle}>{labels.education}</Text>
-          {data.educations.map((edu, i) => (
-            <View key={i} style={styles.item} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>{edu.school}</Text>
-                <Text style={styles.itemDate}>{edu.graduationDate}</Text>
-              </View>
-              <Text style={styles.itemSubtitle}>
-                {edu.degree} in {edu.field}
-              </Text>
-            </View>
-          ))}
-        </View>
-      ) : null,
-    skills:
-      data.skills && data.skills.length > 0 ? (
-        <View key="skills">
-          <Text style={styles.sectionTitle}>{labels.skills}</Text>
-          <Text
-            style={{ fontSize: 9.5 * PX, color: "#52525b", lineHeight: 1.5 }}
-          >
-            {data.skills.join("   /   ")}
-          </Text>
-        </View>
-      ) : null,
-    projects:
-      data.projects && data.projects.length > 0 ? (
-        <View key="projects">
-          <Text style={styles.sectionTitle}>{labels.projects}</Text>
-          {data.projects.map((proj, i) => (
-            <View key={i} style={styles.item} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>
-                  {proj.featured ? "⭐ " : ""}
-                  {proj.name}
-                </Text>
-                <View style={{ flexDirection: "row", gap: 8 * PX }}>
-                  {proj.github && (
-                    <Link style={styles.link} src={proj.github}>
-                      {labels.repo}
-                    </Link>
-                  )}
-                  {proj.deploy && (
-                    <Link style={styles.link} src={proj.deploy}>
-                      {labels.demo}
-                    </Link>
-                  )}
-                </View>
-              </View>
-              {proj.description && (
-                <Text style={styles.description}>{proj.description}</Text>
-              )}
-            </View>
-          ))}
-        </View>
-      ) : null,
-    languages:
-      data.languages && data.languages.length > 0 ? (
-        <View key="languages">
-          <Text style={styles.sectionTitle}>{labels.languages}</Text>
-          <View
-            style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 * PX }}
-          >
-            {data.languages.map((l, i) => (
-              <View key={i} style={{ width: "30%" }}>
-                <Text style={{ fontSize: 10 * PX, fontWeight: "bold" }}>
-                  {l.name}
-                </Text>
-                <Text style={{ fontSize: 8 * PX, color: "#64748b" }}>
-                  {labels.langLabels.conversation}:{" "}
-                  {translateLevel(l.conversation, labels)}
-                </Text>
-              </View>
-            ))}
-          </View>
-        </View>
-      ) : null,
-    certifications:
-      data.certifications && data.certifications.length > 0 ? (
-        <View key="certifications">
-          <Text style={styles.sectionTitle}>
-            {labels.certifications || "Certificações"}
-          </Text>
-          {data.certifications.map((cert, i) => (
-            <View key={i} style={styles.item} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>{cert.name}</Text>
-                <Text style={styles.itemDate}>{cert.date}</Text>
-              </View>
-              <Text style={styles.itemSubtitle}>{cert.issuer}</Text>
-            </View>
-          ))}
-        </View>
-      ) : null,
-    volunteering:
-      data.volunteering && data.volunteering.length > 0 ? (
-        <View key="volunteering">
-          <Text style={styles.sectionTitle}>
-            {labels.volunteering || "Voluntariado"}
-          </Text>
-          {data.volunteering.map((vol, i) => (
-            <View key={i} style={styles.item} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>
-                  {vol.role} em {vol.organization}
-                </Text>
-                <Text style={styles.itemDate}>
-                  {vol.startDate} - {vol.current ? labels.current : vol.endDate}
-                </Text>
-              </View>
-              {vol.description && (
-                <Text style={styles.description}>{vol.description}</Text>
-              )}
-            </View>
-          ))}
-        </View>
-      ) : null,
-    courses:
-      data.courses && data.courses.length > 0 ? (
-        <View key="courses">
-          <Text style={styles.sectionTitle}>{labels.courses || "Cursos"}</Text>
-          {data.courses.map((course, i) => (
-            <View key={i} style={styles.item} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>{course.name}</Text>
-                {(course.startDate || course.endDate) && (
-                  <Text style={styles.itemDate}>
-                    {course.startDate ? course.startDate + " - " : ""}
-                    {course.current ? labels.current : course.endDate}
-                  </Text>
-                )}
-              </View>
-            </View>
-          ))}
-        </View>
-      ) : null,
-    customSections:
-      data.customSections && data.customSections.length > 0 ? (
-        <View key="customSections">
-          {data.customSections.map((sec, i) => (
-            <View key={i}>
-              <Text style={styles.sectionTitle}>{sec.title}</Text>
-              {sec.items.map((item, j) => (
-                <View key={j} style={styles.item} wrap={false}>
-                  <View style={styles.itemHeader}>
-                    <Text style={styles.itemTitle}>
-                      {item.featured ? "⭐ " : ""}
-                      {item.title}
-                    </Text>
-                    {item.date && (
-                      <Text style={styles.itemDate}>{item.date}</Text>
-                    )}
-                  </View>
-                  {item.description && (
-                    <Text style={styles.description}>{item.description}</Text>
-                  )}
-                </View>
-              ))}
-            </View>
-          ))}
-        </View>
-      ) : null,
-  };
-
-  return (
-    <Page size="A4" style={styles.page}>
-      <Text style={styles.name}>
-        {data.personalInfo.name || labels.yourName}
-      </Text>
-      <View style={styles.contactRow}>
-        {data.personalInfo.email && (
-          <Link style={styles.link} src={`mailto:${data.personalInfo.email}`}>
-            {data.personalInfo.email}
-          </Link>
-        )}
-        {data.personalInfo.phone && <Text>{data.personalInfo.phone}</Text>}
-        {data.personalInfo.location && (
-          <Text>{data.personalInfo.location}</Text>
-        )}
-        {data.personalInfo.linkedin && (
-          <Link style={styles.link} src={data.personalInfo.linkedin}>
-            LinkedIn
-          </Link>
-        )}
-        {data.personalInfo.github && (
-          <Link style={styles.link} src={data.personalInfo.github}>
-            GitHub
-          </Link>
-        )}
-        {data.personalInfo.website && (
-          <Link style={styles.link} src={data.personalInfo.website}>
-            Portfólio
-          </Link>
-        )}
-      </View>
-
-      {order.map((key) => sectionsMap[key])}
-
-      {qrCodeDataUrl && (
-        <View style={commonStyles.qrContainer} wrap={false}>
-          <Text style={commonStyles.qrText}>
-            {labels?.qrCodeLabel || "Acesse a versão digital do meu perfil"}
-          </Text>
-          <Image src={qrCodeDataUrl} style={commonStyles.qrImage} />
-        </View>
-      )}
-    </Page>
-  );
-};
-const ExecutiveTemplate = ({
-  data,
-  colorTheme,
-  labels,
-  qrCodeDataUrl,
-  sectionsOrder,
-}: {
-  data: ResumeData;
-  colorTheme: string;
-  labels: any;
-  qrCodeDataUrl?: string;
-  sectionsOrder?: string[];
-}) => {
-  const styles = StyleSheet.create({
-    page: {
-      padding: "24mm",
-      backgroundColor: "#FFFFFF",
-      fontFamily: "Roboto",
-      color: "#18181b",
-    },
-    header: {
-      borderBottom: 1.5 * PX,
-      borderColor: colorTheme,
-      paddingBottom: 12 * PX,
-      marginBottom: 16 * PX,
-    },
-    name: {
-      fontSize: 30 * PX,
-      fontWeight: "bold",
-      color: colorTheme,
-      letterSpacing: -1,
-      marginBottom: 6 * PX,
-    },
-    contactRow: {
-      flexDirection: "row",
-      flexWrap: "wrap",
-      gap: 10 * PX,
-      fontSize: 9 * PX,
-      color: "#475569",
-    },
-    link: {
-      color: "#2563eb",
-      textDecoration: "none",
-      fontWeight: "bold",
-    },
-    summary: {
-      fontSize: 10 * PX,
-      lineHeight: 1.5,
-      color: "#3f3f46",
-      marginBottom: 16 * PX,
-    },
-    sectionTitle: {
-      fontSize: 10 * PX,
-      fontWeight: "bold",
-      textTransform: "uppercase",
-      letterSpacing: 1.5,
-      color: colorTheme,
-      marginBottom: 8 * PX,
-      marginTop: 16 * PX,
-      backgroundColor: "#f4f4f5",
-      padding: "4 8",
-    },
-    item: {
-      marginBottom: 10 * PX,
-      paddingLeft: 8 * PX,
-    },
-    itemHeader: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "baseline",
-    },
-    itemTitle: {
-      fontSize: 11.5 * PX,
-      fontWeight: "bold",
-      color: "#09090b",
-    },
-    itemSubtitle: {
-      fontSize: 10 * PX,
-      fontWeight: "bold",
-      color: "#475569",
-      marginTop: 1 * PX,
-    },
-    itemDate: {
-      fontSize: 9 * PX,
-      color: "#71717a",
-    },
-    description: {
-      fontSize: 9.5 * PX,
-      lineHeight: 1.4,
-      color: "#3f3f46",
-      marginTop: 3 * PX,
-    },
-  });
-
-  const defaultOrder = [
-    "summary",
-    "experiences",
-    "educations",
-    "skills",
     "projects",
-    "languages",
-    "certifications",
     "volunteering",
-    "courses",
     "customSections",
   ];
-  const order = getFullOrder(defaultOrder, sectionsOrder);
 
-  const sectionsMap: Record<string, React.ReactNode> = {
-    summary: data.personalInfo.summary ? (
-      <Text key="summary" style={styles.summary}>
-        {data.personalInfo.summary}
-      </Text>
-    ) : null,
-    experiences:
-      data.experiences && data.experiences.length > 0 ? (
-        <View key="experiences">
-          <Text style={styles.sectionTitle}>{labels.experience}</Text>
-          {data.experiences.map((exp, i) => (
-            <View key={i} style={styles.item} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>
-                  {exp.featured ? "⭐ " : ""}
-                  {exp.position}
-                </Text>
-                <Text style={styles.itemDate}>
-                  {exp.startDate} - {exp.current ? labels.current : exp.endDate}
-                </Text>
-              </View>
-              <Text style={styles.itemSubtitle}>
-                {exp.company} {exp.location ? `| ${exp.location}` : ""}
-              </Text>
-              {exp.description && (
-                <Text style={styles.description}>{exp.description}</Text>
-              )}
-            </View>
-          ))}
-        </View>
-      ) : null,
-    educations:
-      data.educations && data.educations.length > 0 ? (
-        <View key="educations">
-          <Text style={styles.sectionTitle}>{labels.education}</Text>
-          {data.educations.map((edu, i) => (
-            <View key={i} style={styles.item} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>{edu.school}</Text>
-                <Text style={styles.itemDate}>{edu.graduationDate}</Text>
-              </View>
-              <Text style={styles.itemSubtitle}>
-                {edu.degree} em {edu.field}
-              </Text>
-            </View>
-          ))}
-        </View>
-      ) : null,
-    skills:
-      data.skills && data.skills.length > 0 ? (
-        <View key="skills">
-          <Text style={styles.sectionTitle}>{labels.skills}</Text>
-          <View style={{ paddingLeft: 8 * PX }}>
-            <Text style={{ fontSize: 9.5 * PX, color: "#3f3f46" }}>
-              {data.skills.join(", ")}
-            </Text>
-          </View>
-        </View>
-      ) : null,
-    projects:
-      data.projects && data.projects.length > 0 ? (
-        <View key="projects">
-          <Text style={styles.sectionTitle}>{labels.projects}</Text>
-          {data.projects.map((proj, i) => (
-            <View key={i} style={styles.item} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>
-                  {proj.featured ? "⭐ " : ""}
-                  {proj.name}
-                </Text>
-                <View style={{ flexDirection: "row", gap: 6 * PX }}>
-                  {proj.github && (
-                    <Link style={styles.link} src={proj.github}>
-                      {labels.repo}
-                    </Link>
-                  )}
-                  {proj.deploy && (
-                    <Link style={styles.link} src={proj.deploy}>
-                      {labels.demo}
-                    </Link>
-                  )}
-                </View>
-              </View>
-              {proj.description && (
-                <Text style={styles.description}>{proj.description}</Text>
-              )}
-            </View>
-          ))}
-        </View>
-      ) : null,
-    languages:
-      data.languages && data.languages.length > 0 ? (
-        <View key="languages">
-          <Text style={styles.sectionTitle}>{labels.languages}</Text>
-          <View
-            style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              gap: 10 * PX,
-              paddingLeft: 8 * PX,
-            }}
-          >
-            {data.languages.map((l, i) => (
-              <View key={i} style={{ width: "30%" }}>
-                <Text
-                  style={{
-                    fontSize: 10 * PX,
-                    fontWeight: "bold",
-                    color: "#09090b",
-                  }}
-                >
-                  {l.name}
-                </Text>
-                <Text style={{ fontSize: 8 * PX, color: "#71717a" }}>
-                  {labels.langLabels.conversation}:{" "}
-                  {translateLevel(l.conversation, labels)}
-                </Text>
-              </View>
-            ))}
-          </View>
-        </View>
-      ) : null,
-    certifications:
-      data.certifications && data.certifications.length > 0 ? (
-        <View key="certifications">
-          <Text style={styles.sectionTitle}>
-            {labels.certifications || "Certificações"}
-          </Text>
-          {data.certifications.map((cert, i) => (
-            <View key={i} style={styles.item} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>{cert.name}</Text>
-                <Text style={styles.itemDate}>{cert.date}</Text>
-              </View>
-              <Text style={styles.itemSubtitle}>{cert.issuer}</Text>
-            </View>
-          ))}
-        </View>
-      ) : null,
-    volunteering:
-      data.volunteering && data.volunteering.length > 0 ? (
-        <View key="volunteering">
-          <Text style={styles.sectionTitle}>
-            {labels.volunteering || "Voluntariado"}
-          </Text>
-          {data.volunteering.map((vol, i) => (
-            <View key={i} style={styles.item} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>{vol.role}</Text>
-                <Text style={styles.itemDate}>
-                  {vol.startDate} - {vol.current ? labels.current : vol.endDate}
-                </Text>
-              </View>
-              <Text style={styles.itemSubtitle}>{vol.organization}</Text>
-              {vol.description && (
-                <Text style={styles.description}>{vol.description}</Text>
-              )}
-            </View>
-          ))}
-        </View>
-      ) : null,
-    courses:
-      data.courses && data.courses.length > 0 ? (
-        <View key="courses">
-          <Text style={styles.sectionTitle}>{labels.courses || "Cursos"}</Text>
-          {data.courses.map((course, i) => (
-            <View key={i} style={styles.item} wrap={false}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>{course.name}</Text>
-                {(course.startDate || course.endDate) && (
-                  <Text style={styles.itemDate}>
-                    {course.startDate ? course.startDate + " - " : ""}
-                    {course.current ? labels.current : course.endDate}
-                  </Text>
-                )}
-              </View>
-            </View>
-          ))}
-        </View>
-      ) : null,
-    customSections:
-      data.customSections && data.customSections.length > 0 ? (
-        <View key="customSections">
-          {data.customSections.map((sec, i) => (
-            <View key={i}>
-              <Text style={styles.sectionTitle}>{sec.title}</Text>
-              {sec.items.map((item, j) => (
-                <View key={j} style={styles.item} wrap={false}>
-                  <View style={styles.itemHeader}>
-                    <Text style={styles.itemTitle}>
-                      {item.featured ? "⭐ " : ""}
-                      {item.title}
-                    </Text>
-                    {item.date && (
-                      <Text style={styles.itemDate}>{item.date}</Text>
-                    )}
-                  </View>
-                  {item.description && (
-                    <Text style={styles.description}>{item.description}</Text>
-                  )}
-                </View>
-              ))}
-            </View>
-          ))}
-        </View>
-      ) : null,
-  };
+  const orderToUse = sectionsOrder || defaultOrder;
 
-  return (
-    <Page size="A4" style={styles.page}>
-      <View style={styles.header}>
-        <Text style={styles.name}>
-          {data.personalInfo.name || labels.yourName}
-        </Text>
-        <View style={styles.contactRow}>
-          {data.personalInfo.email && (
-            <Link style={styles.link} src={`mailto:${data.personalInfo.email}`}>
-              {data.personalInfo.email}
-            </Link>
-          )}
-          {data.personalInfo.phone && <Text>{data.personalInfo.phone}</Text>}
-          {data.personalInfo.location && (
-            <Text>{data.personalInfo.location}</Text>
-          )}
-          {data.personalInfo.linkedin && (
-            <Link style={styles.link} src={data.personalInfo.linkedin}>
-              LinkedIn
-            </Link>
-          )}
-          {data.personalInfo.github && (
-            <Link style={styles.link} src={data.personalInfo.github}>
-              GitHub
-            </Link>
-          )}
-          {data.personalInfo.website && (
-            <Link style={styles.link} src={data.personalInfo.website}>
-              Portfólio
-            </Link>
-          )}
-        </View>
-      </View>
-
-      {order.map((key) => sectionsMap[key])}
-
-      {qrCodeDataUrl && (
-        <View style={commonStyles.qrContainer} wrap={false}>
-          <Text style={commonStyles.qrText}>
-            {labels?.qrCodeLabel || "Acesse a versão digital do meu perfil"}
-          </Text>
-          <Image src={qrCodeDataUrl} style={commonStyles.qrImage} />
-        </View>
-      )}
-    </Page>
-  );
-};
-
-export const ResumePDF = ({
-  data,
-  colorTheme = "#18181b",
-  templateId = "modern",
-  qrCodeDataUrl,
-  labels,
-  sectionsOrder,
-}: {
-  data: ResumeData;
-  colorTheme?: string;
-  templateId?: string;
-  qrCodeDataUrl?: string;
-  sectionsOrder?: string[];
-  labels: {
-    title: string;
-    yourName: string;
-    portfolio: string;
-    experience: string;
-    education: string;
-    skills: string;
-    languages: string;
-    certifications?: string;
-    projects: string;
-    volunteering?: string;
-    courses?: string;
-    current: string;
-    at: string;
-    repo: string;
-    demo: string;
-    langLabels: {
-      conversation: string;
-      writing: string;
-      reading: string;
-    };
-    langLevels: {
-      basico: string;
-      intermediario: string;
-      avancado: string;
-      fluente: string;
-      nativo: string;
-    };
-    qrCodeLabel?: string;
-  };
-}) => {
   return (
     <Document
-      title={`${labels.title} - ${data.personalInfo.name || "Lume"}`}
+      title={`${labels.title} - ${personalInfo.name || "Lume"}`}
       author="Lume"
     >
-      {templateId === "classic" && (
-        <ClassicTemplate
-          data={data}
-          colorTheme={colorTheme}
-          labels={labels}
-          qrCodeDataUrl={qrCodeDataUrl}
-          sectionsOrder={sectionsOrder}
-        />
-      )}
-      {templateId === "minimal" && (
-        <MinimalTemplate
-          data={data}
-          colorTheme={colorTheme}
-          labels={labels}
-          qrCodeDataUrl={qrCodeDataUrl}
-          sectionsOrder={sectionsOrder}
-        />
-      )}
-      {templateId === "executive" && (
-        <ExecutiveTemplate
-          data={data}
-          colorTheme={colorTheme}
-          labels={labels}
-          qrCodeDataUrl={qrCodeDataUrl}
-          sectionsOrder={sectionsOrder}
-        />
-      )}
-      {templateId === "modern" && (
-        <ModernTemplate
-          data={data}
-          colorTheme={colorTheme}
-          labels={labels}
-          qrCodeDataUrl={qrCodeDataUrl}
-          sectionsOrder={sectionsOrder}
-        />
-      )}
+      <Page size="A4" style={styles.page}>
+        <View style={styles.header}>
+          <Text
+            style={[
+              styles.name,
+              { color: colorTheme, textTransform: "uppercase" },
+            ]}
+          >
+            {personalInfo.name || labels.yourName}
+          </Text>
+          <View style={styles.contactRow}>
+            {personalInfo.email && (
+              <Link style={styles.link} src={`mailto:${personalInfo.email}`}>
+                {personalInfo.email}
+              </Link>
+            )}
+            {personalInfo.phone && (
+              <>
+                <Text style={styles.bullet}>•</Text>
+                <Link
+                  style={styles.link}
+                  src={`https://wa.me/${personalInfo.phone.replace(/\D/g, "")}?text=${encodeURIComponent(labels.locale === "en" ? "I saw your resume" : "Vim pelo seu currículo")}`}
+                >
+                  {personalInfo.phone}
+                </Link>
+              </>
+            )}
+            {personalInfo.location && (
+              <>
+                <Text style={styles.bullet}>•</Text>
+                <Text style={styles.contactText}>{personalInfo.location}</Text>
+              </>
+            )}
+            {personalInfo.linkedin && (
+              <>
+                <Text style={styles.bullet}>•</Text>
+                <Link style={styles.link} src={personalInfo.linkedin}>
+                  LINKEDIN
+                </Link>
+              </>
+            )}
+            {personalInfo.github && (
+              <>
+                <Text style={styles.bullet}>•</Text>
+                <Link style={styles.link} src={personalInfo.github}>
+                  GITHUB
+                </Link>
+              </>
+            )}
+            {personalInfo.website && (
+              <>
+                <Text style={styles.bullet}>•</Text>
+                <Link style={styles.link} src={personalInfo.website}>
+                  {labels.portfolio.toUpperCase()}
+                </Link>
+              </>
+            )}
+          </View>
+        </View>
+
+        {orderToUse.map((id) => sectionRenderers[id])}
+      </Page>
     </Document>
   );
 };

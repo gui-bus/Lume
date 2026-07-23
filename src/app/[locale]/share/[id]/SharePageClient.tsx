@@ -20,6 +20,7 @@ const getResumeLabels = (resumeLocale: string) => {
   const messages = (resumeLocale === "en" ? enMessages : ptMessages) as any;
   const resumeTranslations = messages.common.resume;
   return {
+    locale: resumeLocale,
     title: resumeTranslations.title,
     yourName: resumeTranslations.yourName,
     portfolio: resumeTranslations.portfolio,
@@ -135,6 +136,7 @@ export default function SharePageClient({
           colorTheme={resume.colorTheme || "#18181b"}
           labels={labels}
           qrCodeDataUrl={qrCodeUrl}
+          sectionsOrder={resume.sectionsOrder ?? undefined}
         />,
       ).toBlob();
       const url = URL.createObjectURL(blob);

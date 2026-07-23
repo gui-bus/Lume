@@ -1,7 +1,7 @@
 "use client";
 
 import { ResumeData } from "@/types/resume";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 
@@ -22,6 +22,7 @@ export function ResumeView({
   sectionsOrder,
 }: ResumeViewProps) {
   const tOriginal = useTranslations("common.resume");
+  const locale = useLocale();
 
   const t = useMemo(() => {
     if (!labels) return tOriginal;
@@ -435,7 +436,7 @@ export function ResumeView({
               <>
                 <span className="text-slate-300 font-medium">•</span>
                 <a
-                  href={`https://wa.me/${personalInfo.phone.replace(/\D/g, "")}?text=${encodeURIComponent(t("demo") === "Demo" ? "I saw your resume" : "Vim pelo seu currículo")}`}
+                  href={`https://wa.me/${personalInfo.phone.replace(/\D/g, "")}?text=${encodeURIComponent(locale === "en" ? "I saw your resume" : "Vim pelo seu currículo")}`}
                   target="_blank"
                   className="text-lume-blue hover:underline"
                 >

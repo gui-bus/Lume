@@ -89,6 +89,7 @@ const getResumeLabels = (resumeLocale: string) => {
   const messages = (resumeLocale === "en" ? enMessages : ptMessages) as any;
   const resumeTranslations = messages.common.resume;
   return {
+    locale: resumeLocale,
     title: resumeTranslations.title,
     yourName: resumeTranslations.yourName,
     portfolio: resumeTranslations.portfolio,
@@ -132,6 +133,7 @@ interface EditorViewProps {
   initialShowQrCode?: boolean;
   initialResumeLocale?: string;
   initialSectionsOrder?: string[];
+  initialTemplateId?: string;
 }
 
 export function EditorView({
@@ -142,6 +144,7 @@ export function EditorView({
   initialShowQrCode,
   initialResumeLocale,
   initialSectionsOrder,
+  initialTemplateId,
 }: EditorViewProps) {
   const t = useTranslations("common");
   const tResume = useTranslations("common.resume");
@@ -157,6 +160,9 @@ export function EditorView({
   const [groupId, setGroupId] = useState<string | undefined>(serverGroupId);
   const [slug, setSlug] = useState<string>(initialSlug || "");
   const [showQrCode] = useState(initialShowQrCode ?? false);
+  const [templateId, setTemplateId] = useState<string>(
+    initialTemplateId || "modern",
+  );
   const [isGenerating, setIsGenerating] = useState(false);
   const [resumeLocale, setResumeLocale] = useState<string>(
     initialResumeLocale || locale,
