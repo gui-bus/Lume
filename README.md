@@ -214,9 +214,3 @@ Para uma imersão profunda em cada módulo da aplicação, consulte a pasta [`/d
 - 🏗️ [**`docs/architecture.md`**](file:///c:/Users/Guilherme/Desktop/PROJETOS/Lume/docs/architecture.md): Especificação do Next.js App Router, middleware e PDF Engine.
 - 🗄️ [**`docs/database.md`**](file:///c:/Users/Guilherme/Desktop/PROJETOS/Lume/docs/database.md): Modelagem física e estratégia de JSON + PostgreSQL.
 - ⚖️ [**`docs/business-rules.md`**](file:///c:/Users/Guilherme/Desktop/PROJETOS/Lume/docs/business-rules.md): Regras de pontuação ATS e dicionário de palavras-chave.
-
-<br />
-
-<div align="center">
-  <sub>Desenvolvido com foco em alta performance e qualidade por <b>Guilherme Bus</b>.</sub>
-</div>
