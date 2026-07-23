@@ -2,26 +2,15 @@
   <br/>
   <br/>
   <img src="./public/logo_white.svg" alt="LUME Logo" width="280" />
-
-  <br />
-  <br />
-
-  <p align="center">
-    <strong>Sua Plataforma de Engenharia de Carreira, Validação ATS & Exportação de PDF de Alta Performance</strong>
-  </p>
 </div>
 
 <br />
 
----
-
 ## 🌟 Visão Geral
 
-O **Lume** é um ecossistema completo de gestão e engenharia de carreira desenvolvido para profissionais que buscam conciliar **estética impecável**, **validação técnica por inteligência de dados** e **alta performance**.
+O **Lume** é um criador de currículos profissional desenvolvido para ajudar candidatos a criar, gerenciar e exportar seus currículos de forma simplificada, combinando um design moderno e limpo com uma estrutura organizada.
 
-Mais do que um simples gerador de currículos, o Lume resolve a principal dor de candidatos em processos seletivos modernos: **passar pelos robôs de triagem automática (ATS - Applicant Tracking Systems)** sem perder o apelo visual e a clareza de suas conquistas profissionais.
-
----
+A plataforma permite estruturar informações de forma clara, otimizar a visualização das experiências profissionais, gerenciar tags para organização e exportar o documento final diretamente para PDF de alta qualidade, com suporte a múltiplos idiomas.
 
 ## 🛠️ Stack Tecnológica
 
@@ -29,23 +18,26 @@ Mais do que um simples gerador de currículos, o Lume resolve a principal dor de
   <img alt="React" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/React.svg">
   <img alt="NextJS" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/NextJS.svg">
   <img alt="Typescript" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Typescript.svg">
-  <img alt="Tailwind" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/TailwindCSS.svg">
-  <img alt="ShadCN" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/ShadCNUI.svg">
+  <img alt="TailwindCSS" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/TailwindCSS.svg">
+  <img alt="ShadCNUI" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/ShadCNUI.svg">
   <img alt="Framer Motion" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Framer%20Motion.svg">
-  <img alt="Radix UI" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Radix.svg">
+  <img alt="Radix" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Radix.svg">
   <img alt="Phosphor Icons" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Phosphor%20Icons.svg">
   <img alt="React Hook Form" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/React%20Hook%20Form.svg">
   <img alt="Zod" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Zod.svg">
-  <img alt="Prisma" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/PrismaORM.svg">
-  <img alt="Postgresql" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/PostgreSQL.svg">
+  <img alt="PrismaORM" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/PrismaORM.svg">
+  <img alt="PostgreSQL" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/PostgreSQL.svg">
   <img alt="Clerk" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Clerk.svg">
+  <img alt="nextintl" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/nextintl.svg">
+  <img alt="nuqs" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/nuqs.svg">
+  <img alt="pnpm" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/pnpm.svg">
   <img alt="Vercel" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Vercel.svg">
   <img alt="Vitest" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Vitest.svg">
+  <img alt="Playwright" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Playwright.svg">
+  <img alt="ESLint" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/ESLint.svg">
+  <img alt="Prettier" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Prettier.svg">
   <img alt="Husky" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Husky.svg">
   <img alt="Conventional Commits" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Conventional%20Commits.svg">
-  <img alt="Cursor" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Cursor.svg">
-  <img alt="Gemini" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Gemini.svg">
-  <img alt="Windsurf" height="60" width="60" src="https://github.com/gui-bus/TechIcons/blob/main/Dark/Windsurf.svg">
 </div>
 
 ---
