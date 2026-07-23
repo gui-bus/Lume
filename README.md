@@ -1,7 +1,7 @@
 <div align="center">
   <br/>
   <br/>
-  <img src="./public/LUME_WHITE.svg" alt="LUME Logo" width="280" />
+  <img src="./public/logo_white.svg" alt="LUME Logo" width="280" />
 
   <br />
   <br />
@@ -86,12 +86,12 @@ graph TB
 
 ## 🚀 Funcionalidades Principais
 
-| Módulo                     | Funcionalidades                                                                               | Detalhes Técnicos                                                                             |
-| :------------------------- | :-------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
-| **📝 Editor Formulário**   | • Abas categorizadas<br/>• Drag & Drop reordering<br/>• Preenchimento dinâmico                | Formulário reativo com `@dnd-kit/sortable` e estado gerenciado com validação Zod.             |
-| **📄 PDF Engine**          | • Preview instantâneo<br/>• Download direto em Blob<br/>• Temas de cores Hex                  | Desenvolvido com `@react-pdf/renderer` sem necessidade de servidor Node para gerar arquivos.  |
-| **🌐 Internacionalização** | • Rotas `/pt` e `/en`<br/>• Versões vinculadas por `groupId`<br/>• Seletor dinâmico           | Suporte completo via `next-intl` com sincronização automática do currículo no idioma correto. |
-| **🔗 Links Públicos**      | • Slugs curtos e amigáveis<br/>• Métricas de `views` e `downloads`<br/>• Layout público limpo | Rotas sob `/share/[id]` com incrementadores assíncronos e controle de sessão por cookie.      |
+| Módulo                     | Funcionalidades                                                                                             | Detalhes Técnicos                                                                                                       |
+| :------------------------- | :---------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------- |
+| **📝 Editor Formulário**   | • Abas categorizadas<br/>• Drag & Drop reordering<br/>• Preenchimento dinâmico                              | Formulário reativo com `@dnd-kit/sortable` e estado gerenciado com validação Zod.                                       |
+| **📄 PDF Engine**          | • Preview instantâneo<br/>• Download direto em Blob<br/>• Temas de cores Hex<br/>• Modelos Clássico/Moderno | Desenvolvido com `@react-pdf/renderer` com suporte a múltiplos templates (1 e 2 colunas) sincronizados entre Web e PDF. |
+| **🌐 Internacionalização** | • Rotas `/pt` e `/en`<br/>• Versões vinculadas por `groupId`<br/>• Seletor dinâmico                         | Suporte completo via `next-intl` com sincronização automática do currículo no idioma correto.                           |
+| **🔗 Links Públicos**      | • Slugs curtos e amigáveis<br/>• Métricas de `views` e `downloads`<br/>• Layout público limpo               | Rotas sob `/share/[id]` com incrementadores assíncronos e controle de sessão por cookie.                                |
 
 ---
 
@@ -140,6 +140,9 @@ erDiagram
         string userId FK "ID do usuário"
         string groupId "Agrupador de traduções"
         string slug UK "Link amigável único"
+        datetime expiresAt "Data limite de expiração (Opcional)"
+        int maxViews "Limite de visualizações (Opcional)"
+        string[] sectionsOrder "Ordem de exibição das seções"
     }
 ```
 
