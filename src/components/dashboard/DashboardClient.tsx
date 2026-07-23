@@ -440,9 +440,24 @@ export function DashboardClient({
               onChange={(e) => setLocaleFilter(e.target.value)}
               className="bg-transparent text-sm w-full outline-none text-foreground font-semibold cursor-pointer"
             >
-              <option value="all">{t("dashboard.filterLanguage")}</option>
-              <option value="pt">Português</option>
-              <option value="en">English</option>
+              <option
+                value="all"
+                className="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50"
+              >
+                {t("dashboard.filterLanguage")}
+              </option>
+              <option
+                value="pt"
+                className="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50"
+              >
+                {t("dashboard.langPt")}
+              </option>
+              <option
+                value="en"
+                className="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50"
+              >
+                {t("dashboard.langEn")}
+              </option>
             </select>
           </div>
 
@@ -453,9 +468,18 @@ export function DashboardClient({
               onChange={(e) => setTagFilter(e.target.value)}
               className="bg-transparent text-sm w-full outline-none text-foreground font-semibold cursor-pointer"
             >
-              <option value="all">{t("dashboard.filterTag")}</option>
+              <option
+                value="all"
+                className="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50"
+              >
+                {t("dashboard.filterTag")}
+              </option>
               {allUserTags.map((tag) => (
-                <option key={tag.id} value={tag.id}>
+                <option
+                  key={tag.id}
+                  value={tag.id}
+                  className="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50"
+                >
                   #{tag.name}
                 </option>
               ))}

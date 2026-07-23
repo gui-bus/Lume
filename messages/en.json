@@ -137,6 +137,21 @@
         "signIn": "Sign In",
         "signUp": "Create Account",
         "profile": "Profile"
+      },
+      "commandPalette": {
+        "placeholder": "Type a command or search for a section...",
+        "empty": "No results found.",
+        "navigation": "Navigation",
+        "goDashboard": "Go to Dashboard",
+        "editCurrent": "Edit Current Resume",
+        "openAts": "Open ATS Reader Mode",
+        "viewMetrics": "View Resume Metrics",
+        "preferences": "Preferences & Appearance",
+        "toggleTheme": "Toggle Theme (Light / Dark)",
+        "changeLang": "Change Language (Portuguese / English)",
+        "editorActions": "Editor Actions",
+        "downloadPdf": "Download Resume as PDF",
+        "copyPlainText": "Copy Plain Text to Clipboard"
       }
     },
     "auth": {
@@ -265,6 +280,8 @@
       "newResume": "New Resume",
       "searchPlaceholder": "Search resumes by title or content...",
       "filterLanguage": "All Languages",
+      "langPt": "Portuguese",
+      "langEn": "English",
       "filterTag": "All Tags",
       "sortLabel": "Sorting",
       "sortDesc": "Newest first",

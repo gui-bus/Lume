@@ -137,6 +137,21 @@
         "signIn": "Entrar",
         "signUp": "Criar Conta",
         "profile": "Meu Perfil"
+      },
+      "commandPalette": {
+        "placeholder": "Digite um comando ou busque uma seção...",
+        "empty": "Nenhum resultado encontrado.",
+        "navigation": "Navegação",
+        "goDashboard": "Ir para o Dashboard",
+        "editCurrent": "Editar Currículo Atual",
+        "openAts": "Abrir Modo Leitor ATS",
+        "viewMetrics": "Ver Métricas do Currículo",
+        "preferences": "Preferências & Aparência",
+        "toggleTheme": "Alternar Tema (Claro / Escuro)",
+        "changeLang": "Mudar Idioma (Português / English)",
+        "editorActions": "Ações do Editor",
+        "downloadPdf": "Baixar Currículo em PDF",
+        "copyPlainText": "Copiar Texto Puro para Área de Transferência"
       }
     },
     "auth": {
@@ -265,6 +280,8 @@
       "newResume": "Novo Currículo",
       "searchPlaceholder": "Buscar currículos por título ou conteúdo...",
       "filterLanguage": "Todos os Idiomas",
+      "langPt": "Português",
+      "langEn": "Inglês",
       "filterTag": "Todas as Tags",
       "sortLabel": "Ordenação",
       "sortDesc": "Mais recentes primeiro",

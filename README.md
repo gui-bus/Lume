@@ -1,7 +1,7 @@
 <div align="center">
   <br/>
   <br/>
-  <img src="./public/LUME_WHITE.svg" alt="LUME Logo" width="280" />
+  <img src="./public/logo_white.svg" alt="LUME Logo" width="280" />
 
   <br />
   <br />
@@ -140,6 +140,9 @@ erDiagram
         string userId FK "ID do usuário"
         string groupId "Agrupador de traduções"
         string slug UK "Link amigável único"
+        datetime expiresAt "Data limite de expiração (Opcional)"
+        int maxViews "Limite de visualizações (Opcional)"
+        string[] sectionsOrder "Ordem de exibição das seções"
     }
 ```
 

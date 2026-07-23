@@ -572,7 +572,7 @@ export function ResumeForm({
                           : "bg-muted/10 border-border/40 text-muted-foreground hover:bg-muted/20",
                       )}
                     >
-                      Português
+                      {t("dashboard.langPt")}
                     </Button>
                     <Button
                       type="button"
@@ -584,7 +584,7 @@ export function ResumeForm({
                           : "bg-muted/10 border-border/40 text-muted-foreground hover:bg-muted/20",
                       )}
                     >
-                      English
+                      {t("dashboard.langEn")}
                     </Button>
                   </div>
                 </div>
