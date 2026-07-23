@@ -1,7 +1,12 @@
 "use client";
 
+import enMessages from "../../../messages/en.json";
+import ptMessages from "../../../messages/pt.json";
+
 import { incrementDownload, saveResume } from "@/app/actions/resumeActions";
+import { useRouter } from "@/i18n/navigation";
 import { ResumeForm } from "@/components/editor/ResumeForm";
+import { SectionOrderManager } from "./SectionOrderManager";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ResumeView } from "@/components/preview/ResumeView";
 import { useTheme } from "@/components/theme-provider";
@@ -80,11 +85,53 @@ const defaultData: ResumeData = {
   courses: [],
 };
 
+const getResumeLabels = (resumeLocale: string) => {
+  const messages = (resumeLocale === "en" ? enMessages : ptMessages) as any;
+  const resumeTranslations = messages.common.resume;
+  return {
+    title: resumeTranslations.title,
+    yourName: resumeTranslations.yourName,
+    portfolio: resumeTranslations.portfolio,
+    summary: resumeTranslations.summary,
+    experience: resumeTranslations.experience,
+    education: resumeTranslations.education,
+    skills: resumeTranslations.skills,
+    languages: resumeTranslations.languages,
+    certifications: resumeTranslations.certifications,
+    projects: resumeTranslations.projects,
+    volunteering: resumeTranslations.volunteering,
+    courses: resumeTranslations.courses,
+    current: resumeTranslations.current,
+    at: resumeTranslations.at,
+    repo: resumeTranslations.repo,
+    demo: resumeTranslations.demo,
+    qrCodeLabel:
+      resumeLocale === "en"
+        ? "Access the digital version of my profile"
+        : "Acesse a versão digital do meu perfil",
+    langLabels: {
+      conversation: resumeTranslations.extras.languages.conversation,
+      writing: resumeTranslations.extras.languages.writing,
+      reading: resumeTranslations.extras.languages.reading,
+    },
+    langLevels: {
+      basico: resumeTranslations.extras.languages.levels.basico,
+      intermediario: resumeTranslations.extras.languages.levels.intermediario,
+      avancado: resumeTranslations.extras.languages.levels.avancado,
+      fluente: resumeTranslations.extras.languages.levels.fluente,
+      nativo: resumeTranslations.extras.languages.levels.nativo,
+    },
+  };
+};
+
 interface EditorViewProps {
   initialData?: ResumeData;
   resumeId?: string;
   groupId?: string;
   initialSlug?: string;
+  initialShowQrCode?: boolean;
+  initialResumeLocale?: string;
+  initialSectionsOrder?: string[];
 }
 
 export function EditorView({
@@ -92,10 +139,14 @@ export function EditorView({
   resumeId: serverResumeId,
   groupId: serverGroupId,
   initialSlug,
+  initialShowQrCode,
+  initialResumeLocale,
+  initialSectionsOrder,
 }: EditorViewProps) {
   const t = useTranslations("common");
   const tResume = useTranslations("common.resume");
   const locale = useLocale();
+  const router = useRouter();
 
   const [data, setData] = useState<ResumeData>(
     initialData
@@ -105,7 +156,67 @@ export function EditorView({
   const [resumeId, setResumeId] = useState<string | undefined>(serverResumeId);
   const [groupId, setGroupId] = useState<string | undefined>(serverGroupId);
   const [slug, setSlug] = useState<string>(initialSlug || "");
+  const [showQrCode] = useState(initialShowQrCode ?? false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [resumeLocale, setResumeLocale] = useState<string>(
+    initialResumeLocale || locale,
+  );
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (showQrCode && slug && typeof window !== "undefined") {
+      import("qrcode").then((QRCode) => {
+        QRCode.toDataURL(
+          `${window.location.origin}/${resumeLocale}/share/${slug}`,
+        )
+          .then((url) => setQrCodeUrl(url))
+          .catch((err) => console.error("Error generating QR code:", err));
+      });
+    } else {
+      setQrCodeUrl(undefined);
+    }
+  }, [showQrCode, slug, resumeLocale]);
+
+  const [sectionsOrder, setSectionsOrder] = useState<string[]>(
+    initialSectionsOrder || [
+      "summary",
+      "experiences",
+      "educations",
+      "skills",
+      "projects",
+      "languages",
+      "certifications",
+      "volunteering",
+      "courses",
+      "customSections",
+    ],
+  );
+
+  const handleSectionsOrderChange = async (newOrder: string[]) => {
+    setSectionsOrder(newOrder);
+    if (resumeId) {
+      try {
+        await saveResume(
+          resumeId,
+          data,
+          data.personalInfo.name || undefined,
+          resumeLocale,
+          groupId,
+          slug,
+          templateId,
+          showQrCode,
+          undefined,
+          undefined,
+          undefined,
+          newOrder,
+        );
+      } catch (err) {
+        console.error("Failed to save sections order:", err);
+      }
+    }
+  };
+
+  const resumeLabels = getResumeLabels(resumeLocale);
 
   const handleDownload = async () => {
     if (!data) return;
@@ -116,38 +227,16 @@ export function EditorView({
       const { pdf } = await import("@react-pdf/renderer");
       const { ResumePDF } = await import("@/components/pdf/ResumePDF");
 
-      const labels = {
-        title: tResume("title"),
-        yourName: tResume("yourName"),
-        portfolio: tResume("portfolio"),
-        experience: tResume("experience"),
-        education: tResume("education"),
-        skills: tResume("skills"),
-        languages: tResume("languages"),
-        certifications: tResume("certifications"),
-        projects: tResume("projects"),
-        volunteering: tResume("volunteering"),
-        courses: tResume("courses"),
-        current: tResume("current"),
-        at: tResume("at"),
-        repo: tResume("repo"),
-        demo: tResume("demo"),
-        langLabels: {
-          conversation: tResume("extras.languages.conversation"),
-          writing: tResume("extras.languages.writing"),
-          reading: tResume("extras.languages.reading"),
-        },
-        langLevels: {
-          basico: tResume("extras.languages.levels.basico"),
-          intermediario: tResume("extras.languages.levels.intermediario"),
-          avancado: tResume("extras.languages.levels.avancado"),
-          fluente: tResume("extras.languages.levels.fluente"),
-          nativo: tResume("extras.languages.levels.nativo"),
-        },
-      };
+      const labels = resumeLabels;
 
       const blob = await pdf(
-        <ResumePDF data={data} colorTheme="#18181b" labels={labels} />,
+        <ResumePDF
+          data={data}
+          colorTheme="#18181b"
+          labels={labels}
+          qrCodeDataUrl={qrCodeUrl}
+          sectionsOrder={sectionsOrder}
+        />,
       ).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -199,7 +288,14 @@ export function EditorView({
     setResumeId(serverResumeId);
     setGroupId(serverGroupId);
     setSlug(initialSlug || "");
-  }, [initialData, serverResumeId, serverGroupId, initialSlug]);
+    if (initialResumeLocale) setResumeLocale(initialResumeLocale);
+  }, [
+    initialData,
+    serverResumeId,
+    serverGroupId,
+    initialSlug,
+    initialResumeLocale,
+  ]);
 
   const handleDataChange = useCallback((newData: ResumeData) => {
     setData({ ...newData });
@@ -209,6 +305,40 @@ export function EditorView({
     setResumeId(newId);
     setGroupId(newGroupId);
   }, []);
+
+  const handleResumeLocaleChange = useCallback(
+    async (newLocale: string) => {
+      if (resumeId && data) {
+        try {
+          const result = await saveResume(
+            resumeId,
+            data,
+            data.personalInfo?.name || "Meu Currículo",
+            newLocale,
+            groupId,
+            slug,
+            undefined,
+            showQrCode,
+            undefined,
+            undefined,
+            undefined,
+            sectionsOrder,
+          );
+          toast.success(
+            newLocale === "en"
+              ? "Resume language updated to English"
+              : "Idioma do currículo atualizado para Português",
+          );
+          window.location.href = result.groupId
+            ? `/${newLocale}/?id=${result.groupId}`
+            : `/${newLocale}/`;
+        } catch (err) {
+          console.error("Erro ao salvar idioma do currículo:", err);
+        }
+      }
+    },
+    [resumeId, data, groupId, slug, showQrCode, sectionsOrder],
+  );
 
   const atsResult = useMemo(() => validateATS(data), [data]);
   const spellResult = useMemo(() => checkStrongVerbs(data), [data]);
@@ -497,7 +627,9 @@ export function EditorView({
     <main className="h-screen flex flex-col lg:flex-row bg-background text-foreground overflow-hidden text-left">
       {/* Header Mobile */}
       <header className="lg:hidden no-print h-14 border-b border-border/40 bg-background/50 backdrop-blur-xl flex items-center justify-between px-4 shrink-0 z-40">
-        <Logo width={80} height={20} />
+        <a href={`/${locale}/dashboard`} className="cursor-pointer">
+          <Logo width={80} height={20} />
+        </a>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <Dialog>
@@ -626,8 +758,11 @@ export function EditorView({
           initialData={data}
           resumeId={resumeId}
           groupId={groupId}
+          resumeLocale={resumeLocale}
+          onChangeResumeLocale={handleResumeLocaleChange}
           onDataChange={handleDataChange}
           onIdGenerated={handleIdGenerated}
+          sectionsOrder={sectionsOrder}
           downloadButton={
             <div className="lg:hidden w-full px-10 py-4 border-t bg-card/10">
               <Button
@@ -654,7 +789,9 @@ export function EditorView({
 
         <header className="hidden lg:flex no-print h-16 border-b border-border/40 bg-background/50 backdrop-blur-xl items-center justify-between px-8 shrink-0 z-50">
           <div className="flex items-center gap-4">
-            <Logo width={100} height={26} />
+            <a href={`/${locale}/dashboard`} className="cursor-pointer">
+              <Logo width={100} height={26} />
+            </a>
           </div>
 
           <div className="flex items-center gap-2 md:gap-4">
@@ -824,55 +961,6 @@ export function EditorView({
                     </div>
                   </div>
 
-                  {/* Slug Section */}
-                  <div className="space-y-4">
-                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                      <Browser size={14} weight="duotone" />{" "}
-                      {t("header.tools.visibilityLink")}
-                    </h4>
-                    <div className="space-y-3">
-                      <div className="space-y-2 text-left">
-                        <Label
-                          htmlFor="slug"
-                          className="text-[10px] uppercase font-bold text-muted-foreground ml-1"
-                        >
-                          Custom URL
-                        </Label>
-                        <Input
-                          id="slug"
-                          value={slug}
-                          onChange={(e) =>
-                            setSlug(
-                              e.target.value.toLowerCase().replace(/\s+/g, "-"),
-                            )
-                          }
-                          placeholder="seu-nome"
-                          className="h-12 bg-muted/10 border-border/40 rounded-xl focus:ring-primary/20"
-                        />
-                      </div>
-                      <button
-                        onClick={handleShare}
-                        className="flex items-center gap-4 w-full p-4 rounded-2xl border border-border/40 bg-muted/5 transition-all duration-300 hover:bg-muted/20 hover:border-border/80 group text-left"
-                      >
-                        <div className="w-10 h-10 rounded-xl bg-muted/20 flex items-center justify-center shrink-0 transition-colors group-hover:bg-background">
-                          <ShareNetwork
-                            size={22}
-                            weight="duotone"
-                            className="text-muted-foreground group-hover:text-foreground"
-                          />
-                        </div>
-                        <div className="flex flex-col items-start leading-tight gap-1">
-                          <span className="text-sm font-bold text-foreground">
-                            {t("header.tools.generateLink")}
-                          </span>
-                          <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">
-                            {t("header.tools.generateLinkDesc")}
-                          </span>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-
                   {/* Import/Export Section */}
                   <div className="space-y-4">
                     <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
@@ -928,11 +1016,15 @@ export function EditorView({
                     </div>
                   </div>
 
-                  <div className="pt-8 border-t border-border/20 text-center">
-                    <div className="inline-flex items-center gap-2 text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest">
-                      <Info size={14} weight="duotone" />{" "}
-                      {t("header.tools.version")}
-                    </div>
+                  {/* Section Reordering */}
+                  <div className="space-y-4">
+                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                      <List size={14} weight="duotone" /> Reordenar Seções
+                    </h4>
+                    <SectionOrderManager
+                      sectionsOrder={sectionsOrder}
+                      onChange={handleSectionsOrderChange}
+                    />
                   </div>
                 </div>
               </SheetContent>
@@ -989,7 +1081,13 @@ export function EditorView({
               className="origin-top my-8 z-10"
             >
               <div className="w-[210mm] shadow-[0_0_50px_-12px_rgba(0,0,0,0.12)] dark:shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] rounded-sm overflow-hidden bg-white ring-1 ring-black/5 dark:ring-white/10">
-                <ResumeView data={data} colorTheme="#18181b" />
+                <ResumeView
+                  data={data}
+                  colorTheme="#18181b"
+                  qrCodeUrl={qrCodeUrl}
+                  labels={resumeLabels}
+                  sectionsOrder={sectionsOrder}
+                />
               </div>
             </motion.div>
           </div>

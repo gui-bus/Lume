@@ -20,6 +20,7 @@
       "title": "Resume",
       "yourName": "Your Name",
       "portfolio": "Portfolio",
+      "summary": "Professional Summary",
       "experience": "Professional Experience",
       "education": "Academic Background",
       "skills": "Skills",
@@ -157,6 +158,7 @@
       }
     },
     "editor": {
+      "printLanguage": "Resume Printing Language",
       "subtitle": "Fill in the information to generate your resume.",
       "steps": {
         "profile": "Profile",
@@ -257,6 +259,92 @@
           "add": "Add Course"
         }
       }
+    },
+    "dashboard": {
+      "title": "Resume Dashboard",
+      "newResume": "New Resume",
+      "searchPlaceholder": "Search resumes by title or content...",
+      "filterLanguage": "All Languages",
+      "filterTag": "All Tags",
+      "sortLabel": "Sorting",
+      "sortDesc": "Newest first",
+      "sortAsc": "Oldest first",
+      "views": "Views",
+      "downloads": "Downloads",
+      "lastUpdate": "Updated at",
+      "emptyStateTitle": "No resumes found",
+      "emptyStateDesc": "Get started by creating your first professional resume or adjust the search filters.",
+      "emptyStateAction": "Create My First Resume",
+      "actions": {
+        "edit": "Edit",
+        "duplicate": "Duplicate",
+        "delete": "Delete",
+        "share": "Share",
+        "analytics": "Metrics",
+        "manageTags": "Manage Tags"
+      },
+      "tags": {
+        "title": "Resume Tags",
+        "placeholder": "Add tag (press Enter)...",
+        "suggested": "Suggested Tags"
+      },
+      "shareSettings": {
+        "title": "Share Settings",
+        "slugLabel": "Custom URL (Slug)",
+        "slugPlaceholder": "e.g., john-doe",
+        "passwordLabel": "Password Protection (Optional)",
+        "passwordPlaceholder": "Enter an access password...",
+        "expiresLabel": "Expiration Date (Optional)",
+        "maxViewsLabel": "Views Limit (Optional)",
+        "save": "Update Settings",
+        "success": "Share settings updated successfully!",
+        "enableQrCode": "Include QR Code in PDF"
+      },
+      "subtitle": "Manage, version, and analyze your professional resumes",
+      "statusActive": "Active",
+      "requiresCustomLink": "Requires custom link",
+      "noTagsLinked": "No tags linked to this resume.",
+      "createAndLinkTag": "Create & Link New Tag",
+      "tagColorLabel": "Tag Color",
+      "completed": "Done",
+      "add": "Add",
+      "deleteDialogTitle": "Delete Resume",
+      "deleteDialogDesc": "Are you sure you want to permanently delete this resume? This action cannot be undone and all associated view metrics will be lost.",
+      "cancel": "Cancel",
+      "confirmDelete": "Confirm Delete",
+      "resumesCountFound": "{count, plural, =0 {No resumes found} =1 {1 resume found} other {# resumes found}}",
+      "toasts": {
+        "createError": "Error creating new resume",
+        "duplicateSuccess": "Resume duplicated successfully!",
+        "duplicateError": "Error duplicating resume",
+        "deleteSuccess": "Resume deleted successfully!",
+        "deleteError": "Error deleting resume",
+        "tagAddSuccess": "Tag added!",
+        "tagAddError": "Error adding tag",
+        "tagRemoveSuccess": "Tag removed!",
+        "tagRemoveError": "Error removing tag"
+      }
+    },
+    "landing": {
+      "heroTitle": "Design elite resumes.",
+      "heroSubtitle": "Optimized for ATS systems.",
+      "heroDesc": "Build high-performance resumes with sophisticated vector templates, structural readability validation, and 100% private secure sharing.",
+      "ctaStart": "Create Free Resume",
+      "ctaLogin": "Access My Account",
+      "featuresTitle": "Career Engineering",
+      "featuresDesc": "Premium local features designed to convert views into job interviews.",
+      "featureAtsTitle": "Local ATS Analysis",
+      "featureAtsDesc": "Verify resume readability and check for word repetition locally without paid APIs or data sharing.",
+      "featurePrivacyTitle": "Complete Privacy",
+      "featurePrivacyDesc": "Your data belongs to you. All persistence is secure and controllable via password-protected links.",
+      "featureTemplatesTitle": "Multi-themed Design",
+      "featureTemplatesDesc": "Switch instantly between Modern, Classic, Minimal, and Executive layouts in real time.",
+      "featureQrcodeTitle": "Integrated QR Code",
+      "featureQrcodeDesc": "Generate a QR Code in the PDF footer pointing directly to your updated digital version.",
+      "featureCommandTitle": "Universal Shortcuts",
+      "featureCommandDesc": "Fast keyboard-driven Command Palette to execute quick actions and navigate like a power user.",
+      "templatesTitle": "Optimized Templates",
+      "templatesDesc": "Styles crafted specifically to meet the visual standards demanded by modern industries."
     }
   }
 }

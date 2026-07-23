@@ -1,5 +1,6 @@
 import { getResume, listUserResumes } from "@/app/actions/resumeActions";
 import { EditorView } from "@/components/editor/EditorView";
+import { LandingClient } from "@/components/landing/LandingClient";
 import { ResumeData } from "@/types/resume";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
@@ -16,6 +17,13 @@ export default async function Page({
   const { locale } = await params;
   const { id } = await searchParams;
 
+  if (!id) {
+    if (userId) {
+      redirect(`/${locale}/dashboard`);
+    }
+    return <LandingClient />;
+  }
+
   if (!userId) {
     redirect(`/${locale}/sign-in`);
   }
@@ -23,30 +31,22 @@ export default async function Page({
   let initialData = null;
   let resumeId: string | undefined = undefined;
   let groupId: string | undefined = id;
+  let initialShowQrCode = false;
   let initialSlug: string | undefined = undefined;
+  let initialTemplateId = "modern";
+  let initialResumeLocale = locale;
+  let initialSectionsOrder: string[] | undefined = undefined;
 
-  if (id) {
-    const res = await getResume(id, locale);
-    if (res) {
-      initialData = res.content as unknown as ResumeData;
-      resumeId = res.id;
-      groupId = res.groupId ?? undefined;
-      initialSlug = res.slug ?? undefined;
-    }
-  } else {
-    const userResumes = await listUserResumes();
-    if (userResumes.length > 0) {
-      const latest = userResumes[0];
-      const res = await getResume(latest.groupId, locale);
-      if (res) {
-        initialData = res.content as unknown as ResumeData;
-        resumeId = res.id;
-        groupId = res.groupId ?? undefined;
-        initialSlug = res.slug ?? undefined;
-      } else {
-        groupId = latest.groupId ?? undefined;
-      }
-    }
+  const res = await getResume(id, locale);
+  if (res) {
+    initialData = res.content as unknown as ResumeData;
+    resumeId = res.id;
+    groupId = res.groupId ?? undefined;
+    initialSlug = res.slug ?? undefined;
+    initialShowQrCode = res.showQrCode ?? false;
+    initialTemplateId = res.templateId ?? "modern";
+    initialResumeLocale = res.locale ?? locale;
+    initialSectionsOrder = res.sectionsOrder ?? undefined;
   }
 
   return (
@@ -56,6 +56,10 @@ export default async function Page({
         resumeId={resumeId}
         groupId={groupId}
         initialSlug={initialSlug}
+        initialShowQrCode={initialShowQrCode}
+        initialTemplateId={initialTemplateId}
+        initialResumeLocale={initialResumeLocale}
+        initialSectionsOrder={initialSectionsOrder}
       />
     </Suspense>
   );
