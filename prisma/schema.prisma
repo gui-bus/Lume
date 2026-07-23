@@ -7,12 +7,13 @@ datasource db {
 }
 
 model User {
-  id        String   @id
-  email     String   @unique
-  name      String?
-  onboarded Boolean  @default(false)
-  resumes   Resume[]
-  tags      Tag[]
+  id           String        @id
+  email        String        @unique
+  name         String?
+  onboarded    Boolean       @default(false)
+  resumes      Resume[]
+  tags         Tag[]
+  coverLetters CoverLetter[]
 }
 
 model Resume {
@@ -57,14 +58,47 @@ model ShareEvent {
 }
 
 model Tag {
-  id        String   @id @default(uuid())
-  name      String
-  color     String   @default("#3b82f6")
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  resumes   Resume[]
-  createdAt DateTime @default(now())
+  id           String        @id @default(uuid())
+  name         String
+  color        String        @default("#3b82f6")
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resumes      Resume[]
+  coverLetters CoverLetter[]
+  createdAt    DateTime      @default(now())
 
   @@unique([userId, name])
+}
+
+model CoverLetter {
+  id               String   @id @default(uuid())
+  title            String
+  senderName       String
+  senderEmail      String
+  senderPhone      String?
+  senderLocation   String?
+  senderLinkedin   String?
+  senderGithub     String?
+  senderPortfolio  String?
+  recipientName    String?
+  recipientCompany String?
+  recipientTitle   String?
+  recipientAddress String?
+  date             String?
+  subject          String?
+  content          String   @db.Text
+  colorTheme       String   @default("#18181b")
+  templateId       String   @default("modern")
+  locale           String   @default("pt")
+  groupId          String
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  tags             Tag[]
+  tagsOrder        String[] @default([])
+
+  @@unique([groupId, locale])
+  @@index([userId])
 }
 
