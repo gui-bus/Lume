@@ -298,7 +298,6 @@ export default function SharePageClient({
 
   return (
     <main className="min-h-screen w-full bg-[#f8fafc] dark:bg-[#020617] canvas-grid overflow-y-auto overflow-x-hidden flex flex-col items-center">
-      {/* Header Elegante */}
       <header className="w-full max-w-5xl px-6 py-8 flex justify-between items-center no-print">
         <Link href="/sign-in">
           <Logo width={80} height={22} />
@@ -323,7 +322,6 @@ export default function SharePageClient({
         </div>
       </header>
 
-      {/* Container do Currículo */}
       <div className="flex-1 w-full flex flex-col items-center px-4 sm:px-8 pb-12">
         <PageWrapper className="my-4">
           <ResumeView
@@ -336,7 +334,6 @@ export default function SharePageClient({
           />
         </PageWrapper>
 
-        {/* Branding sutil ao final */}
         <Link
           href="/sign-in"
           className="mt-16 mb-8 flex items-center gap-3 bg-background/50 backdrop-blur-sm border border-border/40 px-6 py-2.5 rounded-full shadow-sm text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 no-print hover:bg-background/80 hover:text-primary transition-all group"

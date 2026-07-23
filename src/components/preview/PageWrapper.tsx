@@ -74,7 +74,6 @@ export function PageWrapper({ children, className }: PageWrapperProps) {
         </div>
       </div>
 
-      {/* Versão para impressão */}
       <div className="hidden print:block w-full">{children}</div>
     </div>
   );

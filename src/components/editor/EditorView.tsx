@@ -697,7 +697,6 @@ export function EditorView({
 
   return (
     <main className="h-screen flex flex-col lg:flex-row bg-background text-foreground overflow-hidden text-left">
-      {/* Header Mobile */}
       <header className="lg:hidden no-print h-14 border-b border-border/40 bg-background/50 backdrop-blur-xl flex items-center justify-between px-4 shrink-0 z-40">
         <a href={`/${locale}/dashboard`} className="cursor-pointer">
           <Logo width={80} height={20} />
@@ -887,8 +886,6 @@ export function EditorView({
       </div>
 
       <div className="hidden lg:flex flex-1 flex-col bg-muted/5 relative overflow-hidden">
-        {/* Floating Download Button Mobile (Removido pois preview está oculto no mobile) */}
-
         <header className="hidden lg:flex no-print h-16 border-b border-border/40 bg-background/50 backdrop-blur-xl items-center justify-between px-8 shrink-0 z-50">
           <div className="flex items-center gap-4">
             <a href={`/${locale}/dashboard`} className="cursor-pointer">
@@ -1030,7 +1027,6 @@ export function EditorView({
                 </SheetHeader>
 
                 <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-8 text-left">
-                  {/* LinkedIn Section */}
                   <div className="space-y-4">
                     <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                       <LinkedinLogo size={14} weight="duotone" /> LinkedIn
@@ -1063,7 +1059,6 @@ export function EditorView({
                     </div>
                   </div>
 
-                  {/* Import/Export Section */}
                   <div className="space-y-4">
                     <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                       <FileArrowUp size={14} weight="duotone" /> Backup &
@@ -1118,7 +1113,6 @@ export function EditorView({
                     </div>
                   </div>
 
-                  {/* Section Reordering */}
                   <div className="space-y-4">
                     <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                       <List size={14} weight="duotone" /> Reordenar Seções

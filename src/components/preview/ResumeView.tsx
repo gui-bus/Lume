@@ -429,7 +429,6 @@ export function ResumeView({
 
       return (
         <div className="a4-page flex gap-8 shadow-none text-left p-[20mm]">
-          {/* Left Column (Sidebar) */}
           <div className="w-[30%] border-r border-slate-100 pr-6 flex flex-col gap-6">
             <div>
               <h2
@@ -491,7 +490,6 @@ export function ResumeView({
             {sectionRenderers.languages}
           </div>
 
-          {/* Right Column */}
           <div className="w-[70%] pl-2 flex flex-col gap-6">
             <div className="flex flex-col gap-2 pb-4">
               <h1
