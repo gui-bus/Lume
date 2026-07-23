@@ -187,33 +187,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 4 * PX,
   },
-  leftCol: {
-    width: "35%",
-    paddingRight: 16 * PX,
-  },
-  rightCol: {
-    width: "65%",
-    paddingLeft: 16 * PX,
-    borderLeft: "1px solid #e2e8f0",
-  },
-  contactCol: {
-    flexDirection: "column",
-    gap: 4 * PX,
-    marginBottom: 24 * PX,
-  },
 });
 
 export const ResumePDF = ({
   data,
   colorTheme = "#18181b",
   labels,
-  sectionsOrder,
-  templateId = "classic",
 }: {
   data: ResumeData;
   colorTheme?: string;
-  sectionsOrder?: string[];
-  templateId?: string;
   labels: {
     title: string;
     yourName: string;
@@ -230,7 +212,6 @@ export const ResumePDF = ({
     at: string;
     repo: string;
     demo: string;
-    locale?: string;
     langLabels: {
       conversation: string;
       writing: string;
@@ -276,550 +257,426 @@ export const ResumePDF = ({
     </View>
   );
 
-  const sectionRenderers: Record<string, React.ReactNode> = {
-    summary: personalInfo.summary ? (
-      <Text key="summary" style={styles.summary}>
-        {personalInfo.summary}
-      </Text>
-    ) : null,
-    experiences:
-      experiences?.length > 0 ? (
-        <View key="experiences" style={{ marginBottom: 10 * PX }}>
-          {renderSectionTitle(labels.experience)}
-          {experiences.map((exp, i) => (
-            <View
-              key={i}
-              style={[
-                styles.item,
-                i === experiences.length - 1 ? { marginBottom: 0 } : {},
-              ]}
-              wrap={false}
-            >
-              <View style={styles.itemHeader}>
-                <View
-                  style={{
-                    flexDirection: templateId === "modern" ? "column" : "row",
-                    alignItems:
-                      templateId === "modern" ? "flex-start" : "baseline",
-                  }}
-                >
-                  <Text
-                    style={[styles.itemTitle, { textTransform: "uppercase" }]}
-                  >
-                    {exp.company}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 12 * PX,
-                      color: "#475569",
-                      fontWeight: "bold",
-                      marginLeft: templateId === "modern" ? 0 : 4 * PX,
-                      marginTop: templateId === "modern" ? 2 * PX : 0,
-                    }}
-                  >
-                    {templateId === "modern" ? "" : "— "}
-                    {exp.position}
-                  </Text>
-                </View>
-                <Text style={styles.itemDate}>
-                  {exp.startDate} — {exp.current ? labels.current : exp.endDate}
-                </Text>
-              </View>
-              {exp.location && (
-                <Text style={[styles.location, { marginBottom: 2 * PX }]}>
-                  {exp.location}
-                </Text>
-              )}
-              {exp.description && (
-                <Text style={styles.description}>
-                  {exp.description.replace(/[*-]/g, "•")}
-                </Text>
-              )}
-            </View>
-          ))}
-        </View>
-      ) : null,
-    educations:
-      educations?.length > 0 ? (
-        <View key="educations" style={{ marginBottom: 10 * PX }}>
-          {renderSectionTitle(labels.education)}
-          {educations.map((edu, i) => (
-            <View
-              key={i}
-              style={{
-                marginBottom: i === educations.length - 1 ? 0 : 12 * PX,
-              }}
-              wrap={false}
-            >
-              <View style={styles.itemHeader}>
-                <View
-                  style={{
-                    flexDirection: templateId === "modern" ? "column" : "row",
-                    alignItems:
-                      templateId === "modern" ? "flex-start" : "baseline",
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.itemTitle,
-                      { fontSize: 13 * PX, textTransform: "uppercase" },
-                    ]}
-                  >
-                    {edu.school}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 11 * PX,
-                      color: "#475569",
-                      fontWeight: "bold",
-                      marginLeft: templateId === "modern" ? 0 : 4 * PX,
-                      marginTop: templateId === "modern" ? 2 * PX : 0,
-                    }}
-                  >
-                    {templateId === "modern" ? "" : "| "}
-                    {edu.degree} — {edu.field}
-                  </Text>
-                </View>
-                <Text style={styles.itemDate}>{edu.graduationDate}</Text>
-              </View>
-            </View>
-          ))}
-        </View>
-      ) : null,
-    courses:
-      courses?.length > 0 ? (
-        <View key="courses" style={{ marginBottom: 10 * PX }}>
-          {renderSectionTitle(labels.courses)}
-          <View
-            style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-            }}
-          >
-            {courses.map((c, i) => (
-              <View
-                key={i}
-                style={{
-                  width: "50%",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "baseline",
-                  paddingRight: i % 2 === 0 ? 12 * PX : 0,
-                  paddingLeft: i % 2 !== 0 ? 12 * PX : 0,
-                  marginBottom: 4 * PX,
-                }}
-                wrap={false}
-              >
-                <Text
-                  style={[
-                    styles.itemTitle,
-                    {
-                      fontSize: 11 * PX,
-                      maxWidth: "65%",
-                    },
-                  ]}
-                >
-                  {c.name}
-                </Text>
-                <Text style={[styles.itemDate, { fontSize: 8 * PX }]}>
-                  {c.startDate && `${c.startDate} — `}
-                  {c.current ? labels.current : c.endDate}
-                </Text>
-              </View>
-            ))}
-          </View>
-        </View>
-      ) : null,
-    skills:
-      skills?.length > 0 ? (
-        <View key="skills" style={{ marginBottom: 10 * PX }}>
-          {renderSectionTitle(labels.skills)}
-          <View style={[styles.skillsGrid, { marginBottom: 0 }]}>
-            {skills.map((s, i) => (
-              <Text key={i} style={styles.skillTag}>
-                {s}
-              </Text>
-            ))}
-          </View>
-        </View>
-      ) : null,
-    languages:
-      languages?.length > 0 ? (
-        <View key="languages" style={{ marginBottom: 10 * PX }}>
-          {renderSectionTitle(labels.languages)}
-          <View
-            style={{
-              flexDirection: templateId === "modern" ? "column" : "row",
-              flexWrap: "wrap",
-              gap: 20 * PX,
-            }}
-          >
-            {languages.map((l, i) => {
-              const getLevelDots = (level: string) => {
-                const levels = [
-                  "Básico",
-                  "Intermediário",
-                  "Avançado",
-                  "Fluente",
-                  "Nativo",
-                ];
-                const index = levels.indexOf(level) + 1;
-                return (
-                  <View style={{ flexDirection: "row", gap: 2 * PX }}>
-                    {[1, 2, 3, 4, 5].map((dot) => (
-                      <View
-                        key={dot}
-                        style={{
-                          width: 5 * PX,
-                          height: 5 * PX,
-                          borderRadius: 2.5 * PX,
-                          backgroundColor: dot <= index ? "#94a3b8" : "#f1f5f9",
-                        }}
-                      />
-                    ))}
-                  </View>
-                );
-              };
-
-              const renderLevelLine = (label: string, value: string) => (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: 2 * PX,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 7 * PX,
-                      fontWeight: "bold",
-                      color: "#94a3b8",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    {label}
-                  </Text>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 6 * PX,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 7 * PX,
-                        fontWeight: "bold",
-                        color: "#475569",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      {value}
-                    </Text>
-                    {getLevelDots(value)}
-                  </View>
-                </View>
-              );
-
-              return (
-                <View
-                  key={i}
-                  style={{ width: templateId === "modern" ? "100%" : "45%" }}
-                  wrap={false}
-                >
-                  <Text
-                    style={[
-                      styles.langName,
-                      { fontSize: 10 * PX, marginBottom: 4 * PX },
-                    ]}
-                  >
-                    {l.name}
-                  </Text>
-                  <View>
-                    {renderLevelLine(
-                      labels.langLabels.conversation,
-                      translateLevel(l.conversation),
-                    )}
-                    {renderLevelLine(
-                      labels.langLabels.writing,
-                      translateLevel(l.writing),
-                    )}
-                    {renderLevelLine(
-                      labels.langLabels.reading,
-                      translateLevel(l.reading),
-                    )}
-                  </View>
-                </View>
-              );
-            })}
-          </View>
-        </View>
-      ) : null,
-    certifications:
-      certifications?.length > 0 ? (
-        <View key="certifications" style={{ marginBottom: 10 * PX }}>
-          {renderSectionTitle(labels.certifications)}
-          {certifications.map((c, i) => (
-            <View
-              key={i}
-              style={{
-                marginBottom: i === certifications.length - 1 ? 0 : 12 * PX,
-              }}
-              wrap={false}
-            >
-              <View style={styles.itemHeader}>
-                <Text style={[styles.itemTitle, { fontSize: 12 * PX }]}>
-                  {c.name}
-                </Text>
-                <Text style={styles.itemDate}>{c.date}</Text>
-              </View>
-              <Text style={styles.company}>{c.issuer}</Text>
-            </View>
-          ))}
-        </View>
-      ) : null,
-    projects:
-      projects?.length > 0 ? (
-        <View key="projects" style={{ marginBottom: 10 * PX }}>
-          {renderSectionTitle(labels.projects)}
-          {projects.map((proj, i) => (
-            <View
-              key={i}
-              style={[
-                styles.item,
-                i === projects.length - 1 ? { marginBottom: 0 } : {},
-              ]}
-              wrap={false}
-            >
-              <View style={styles.projectHeader}>
-                <Text style={[styles.itemTitle, { fontSize: 13 * PX }]}>
-                  {proj.name}
-                </Text>
-                <View style={{ flexDirection: "row", gap: 12 * PX }}>
-                  {proj.github && (
-                    <Link style={styles.linkSmall} src={proj.github}>
-                      {labels.repo}
-                    </Link>
-                  )}
-                  {proj.deploy && (
-                    <Link style={styles.linkSmall} src={proj.deploy}>
-                      {labels.demo}
-                    </Link>
-                  )}
-                </View>
-              </View>
-              {proj.description && (
-                <Text style={styles.description}>{proj.description}</Text>
-              )}
-            </View>
-          ))}
-        </View>
-      ) : null,
-    volunteering:
-      volunteering?.length > 0 ? (
-        <View key="volunteering" style={{ marginBottom: 0 }}>
-          {renderSectionTitle(labels.volunteering)}
-          {volunteering.map((v, i) => (
-            <View
-              key={i}
-              style={{
-                marginBottom: i === volunteering.length - 1 ? 0 : 12 * PX,
-              }}
-              wrap={false}
-            >
-              <View style={styles.itemHeader}>
-                <Text style={[styles.itemTitle, { fontSize: 13 * PX }]}>
-                  {v.organization}
-                </Text>
-                <Text style={styles.itemDate}>{v.role}</Text>
-              </View>
-              {v.description && (
-                <Text style={styles.description}>{v.description}</Text>
-              )}
-            </View>
-          ))}
-        </View>
-      ) : null,
-    customSections:
-      data.customSections && data.customSections.length > 0 ? (
-        <View key="customSections">
-          {data.customSections.map((sec, i) => (
-            <View key={i} style={{ marginTop: 10 * PX }}>
-              {renderSectionTitle(sec.title)}
-              {sec.items.map((item, j) => (
-                <View key={j} style={styles.item} wrap={false}>
-                  <View style={styles.itemHeader}>
-                    <Text style={styles.itemTitle}>
-                      {item.featured ? "⭐ " : ""}
-                      {item.title}
-                    </Text>
-                    {item.date && (
-                      <Text style={styles.itemDate}>{item.date}</Text>
-                    )}
-                  </View>
-                  {item.description && (
-                    <Text style={styles.description}>{item.description}</Text>
-                  )}
-                </View>
-              ))}
-            </View>
-          ))}
-        </View>
-      ) : null,
-  };
-
-  const defaultOrder = [
-    "summary",
-    "experiences",
-    "educations",
-    "courses",
-    "skills",
-    "languages",
-    "certifications",
-    "projects",
-    "volunteering",
-    "customSections",
-  ];
-
-  const orderToUse = sectionsOrder || defaultOrder;
-
-  const leftColSections = ["skills", "languages"];
-  const rightColSections = orderToUse.filter(
-    (id) => !leftColSections.includes(id),
-  );
-
   return (
     <Document
       title={`${labels.title} - ${personalInfo.name || "Lume"}`}
       author="Lume"
     >
       <Page size="A4" style={styles.page}>
-        {templateId === "modern" ? (
-          <View style={{ flexDirection: "row" }}>
-            <View style={styles.leftCol}>
-              <View style={styles.contactCol}>
-                {personalInfo.email && (
-                  <Link
-                    style={styles.link}
-                    src={`mailto:${personalInfo.email}`}
+        {/* 1. Cabeçalho */}
+        <View style={styles.header}>
+          <Text
+            style={[
+              styles.name,
+              { color: colorTheme, textTransform: "uppercase" },
+            ]}
+          >
+            {personalInfo.name || labels.yourName}
+          </Text>
+          <View style={styles.contactRow}>
+            {personalInfo.email && (
+              <Link style={styles.link} src={`mailto:${personalInfo.email}`}>
+                {personalInfo.email}
+              </Link>
+            )}
+            {personalInfo.phone && (
+              <>
+                <Text style={styles.bullet}>•</Text>
+                <Link
+                  style={styles.link}
+                  src={`https://wa.me/${personalInfo.phone.replace(/\D/g, "")}?text=${encodeURIComponent(labels.demo === "Demo" ? "I saw your resume" : "Vim pelo seu currículo")}`}
+                >
+                  {personalInfo.phone}
+                </Link>
+              </>
+            )}
+            {personalInfo.location && (
+              <>
+                <Text style={styles.bullet}>•</Text>
+                <Text style={styles.contactText}>{personalInfo.location}</Text>
+              </>
+            )}
+            {personalInfo.linkedin && (
+              <>
+                <Text style={styles.bullet}>•</Text>
+                <Link style={styles.link} src={personalInfo.linkedin}>
+                  LINKEDIN
+                </Link>
+              </>
+            )}
+            {personalInfo.github && (
+              <>
+                <Text style={styles.bullet}>•</Text>
+                <Link style={styles.link} src={personalInfo.github}>
+                  GITHUB
+                </Link>
+              </>
+            )}
+            {personalInfo.website && (
+              <>
+                <Text style={styles.bullet}>•</Text>
+                <Link style={styles.link} src={personalInfo.website}>
+                  {labels.portfolio.toUpperCase()}
+                </Link>
+              </>
+            )}
+          </View>
+          {personalInfo.summary && (
+            <Text style={styles.summary}>{personalInfo.summary}</Text>
+          )}
+        </View>
+
+        {/* 2. Experiência */}
+        {experiences?.length > 0 && (
+          <View style={{ marginBottom: 10 * PX }}>
+            {renderSectionTitle(labels.experience)}
+            {experiences.map((exp, i) => (
+              <View
+                key={i}
+                style={[
+                  styles.item,
+                  i === experiences.length - 1 ? { marginBottom: 0 } : {},
+                ]}
+                wrap={false}
+              >
+                <View style={styles.itemHeader}>
+                  <View
+                    style={{ flexDirection: "row", alignItems: "baseline" }}
                   >
-                    {personalInfo.email}
-                  </Link>
-                )}
-                {personalInfo.phone && (
-                  <Link
-                    style={styles.link}
-                    src={`https://wa.me/${personalInfo.phone.replace(/\D/g, "")}?text=${encodeURIComponent(labels.locale === "en" ? "I saw your resume" : "Vim pelo seu currículo")}`}
-                  >
-                    {personalInfo.phone}
-                  </Link>
-                )}
-                {personalInfo.location && (
-                  <Text style={styles.contactText}>
-                    {personalInfo.location}
+                    <Text
+                      style={[styles.itemTitle, { textTransform: "uppercase" }]}
+                    >
+                      {exp.company}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 12 * PX,
+                        color: "#475569",
+                        fontWeight: "bold",
+                        marginLeft: 4 * PX,
+                      }}
+                    >
+                      — {exp.position}
+                    </Text>
+                  </View>
+                  <Text style={styles.itemDate}>
+                    {exp.startDate} —{" "}
+                    {exp.current ? labels.current : exp.endDate}
+                  </Text>
+                </View>
+                {exp.location && (
+                  <Text style={[styles.location, { marginBottom: 2 * PX }]}>
+                    {exp.location}
                   </Text>
                 )}
-                {personalInfo.linkedin && (
-                  <Link style={styles.link} src={personalInfo.linkedin}>
-                    LINKEDIN
-                  </Link>
-                )}
-                {personalInfo.github && (
-                  <Link style={styles.link} src={personalInfo.github}>
-                    GITHUB
-                  </Link>
-                )}
-                {personalInfo.website && (
-                  <Link style={styles.link} src={personalInfo.website}>
-                    {labels.portfolio.toUpperCase()}
-                  </Link>
+                {exp.description && (
+                  <Text style={styles.description}>
+                    {exp.description.replace(/[*-]/g, "•")}
+                  </Text>
                 )}
               </View>
-              {leftColSections.map((id) => sectionRenderers[id])}
-            </View>
-            <View style={styles.rightCol}>
-              <View style={styles.header}>
-                <Text
-                  style={[
-                    styles.name,
-                    { color: colorTheme, textTransform: "uppercase" },
-                  ]}
+            ))}
+          </View>
+        )}
+
+        {/* 3. Educação */}
+        {educations?.length > 0 && (
+          <View style={{ marginBottom: 10 * PX }}>
+            {renderSectionTitle(labels.education)}
+            {educations.map((edu, i) => (
+              <View
+                key={i}
+                style={{
+                  marginBottom: i === educations.length - 1 ? 0 : 12 * PX,
+                }}
+                wrap={false}
+              >
+                <View style={styles.itemHeader}>
+                  <View
+                    style={{ flexDirection: "row", alignItems: "baseline" }}
+                  >
+                    <Text
+                      style={[
+                        styles.itemTitle,
+                        { fontSize: 13 * PX, textTransform: "uppercase" },
+                      ]}
+                    >
+                      {edu.school}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 11 * PX,
+                        color: "#475569",
+                        fontWeight: "bold",
+                        marginLeft: 4 * PX,
+                      }}
+                    >
+                      | {edu.degree} — {edu.field}
+                    </Text>
+                  </View>
+                  <Text style={styles.itemDate}>{edu.graduationDate}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* 3.1. Cursos */}
+        {courses?.length > 0 && (
+          <View style={{ marginBottom: 10 * PX }}>
+            {renderSectionTitle(labels.courses)}
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+              }}
+            >
+              {courses.map((c, i) => (
+                <View
+                  key={i}
+                  style={{
+                    width: "50%",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "baseline",
+                    paddingRight: i % 2 === 0 ? 12 * PX : 0,
+                    paddingLeft: i % 2 !== 0 ? 12 * PX : 0,
+                    marginBottom: 4 * PX,
+                  }}
+                  wrap={false}
                 >
-                  {personalInfo.name || labels.yourName}
-                </Text>
-              </View>
-              {rightColSections.map((id) => sectionRenderers[id])}
+                  <Text
+                    style={[
+                      styles.itemTitle,
+                      {
+                        fontSize: 11 * PX,
+                        maxWidth: "65%",
+                      },
+                    ]}
+                  >
+                    {c.name}
+                  </Text>
+                  <Text style={[styles.itemDate, { fontSize: 8 * PX }]}>
+                    {c.startDate && `${c.startDate} — `}
+                    {c.current ? labels.current : c.endDate}
+                  </Text>
+                </View>
+              ))}
             </View>
           </View>
-        ) : (
-          <>
-            <View style={styles.header}>
-              <Text
-                style={[
-                  styles.name,
-                  { color: colorTheme, textTransform: "uppercase" },
-                ]}
-              >
-                {personalInfo.name || labels.yourName}
-              </Text>
-              <View style={styles.contactRow}>
-                {personalInfo.email && (
-                  <Link
-                    style={styles.link}
-                    src={`mailto:${personalInfo.email}`}
+        )}
+
+        {/* 4. Habilidades */}
+        {skills?.length > 0 && (
+          <View style={{ marginBottom: 10 * PX }}>
+            {renderSectionTitle(labels.skills)}
+            <View style={[styles.skillsGrid, { marginBottom: 0 }]}>
+              {skills.map((s, i) => (
+                <Text key={i} style={styles.skillTag}>
+                  {s}
+                </Text>
+              ))}
+            </View>
+          </View>
+        )}
+
+        {/* 5. Idiomas */}
+        {languages?.length > 0 && (
+          <View style={{ marginBottom: 10 * PX }}>
+            {renderSectionTitle(labels.languages)}
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                gap: 20 * PX,
+              }}
+            >
+              {languages.map((l, i) => {
+                const getLevelDots = (level: string) => {
+                  const levels = [
+                    "Básico",
+                    "Intermediário",
+                    "Avançado",
+                    "Fluente",
+                    "Nativo",
+                  ];
+                  const index = levels.indexOf(level) + 1;
+                  return (
+                    <View style={{ flexDirection: "row", gap: 2 * PX }}>
+                      {[1, 2, 3, 4, 5].map((dot) => (
+                        <View
+                          key={dot}
+                          style={{
+                            width: 5 * PX,
+                            height: 5 * PX,
+                            borderRadius: 2.5 * PX,
+                            backgroundColor:
+                              dot <= index ? "#94a3b8" : "#f1f5f9",
+                          }}
+                        />
+                      ))}
+                    </View>
+                  );
+                };
+
+                const renderLevelLine = (label: string, value: string) => (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: 2 * PX,
+                    }}
                   >
-                    {personalInfo.email}
-                  </Link>
-                )}
-                {personalInfo.phone && (
-                  <>
-                    <Text style={styles.bullet}>•</Text>
-                    <Link
-                      style={styles.link}
-                      src={`https://wa.me/${personalInfo.phone.replace(/\D/g, "")}?text=${encodeURIComponent(labels.locale === "en" ? "I saw your resume" : "Vim pelo seu currículo")}`}
+                    <Text
+                      style={{
+                        fontSize: 7 * PX,
+                        fontWeight: "bold",
+                        color: "#94a3b8",
+                        textTransform: "uppercase",
+                      }}
                     >
-                      {personalInfo.phone}
-                    </Link>
-                  </>
-                )}
-                {personalInfo.location && (
-                  <>
-                    <Text style={styles.bullet}>•</Text>
-                    <Text style={styles.contactText}>
-                      {personalInfo.location}
+                      {label}
                     </Text>
-                  </>
-                )}
-                {personalInfo.linkedin && (
-                  <>
-                    <Text style={styles.bullet}>•</Text>
-                    <Link style={styles.link} src={personalInfo.linkedin}>
-                      LINKEDIN
-                    </Link>
-                  </>
-                )}
-                {personalInfo.github && (
-                  <>
-                    <Text style={styles.bullet}>•</Text>
-                    <Link style={styles.link} src={personalInfo.github}>
-                      GITHUB
-                    </Link>
-                  </>
-                )}
-                {personalInfo.website && (
-                  <>
-                    <Text style={styles.bullet}>•</Text>
-                    <Link style={styles.link} src={personalInfo.website}>
-                      {labels.portfolio.toUpperCase()}
-                    </Link>
-                  </>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 6 * PX,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 7 * PX,
+                          fontWeight: "bold",
+                          color: "#475569",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        {value}
+                      </Text>
+                      {getLevelDots(value)}
+                    </View>
+                  </View>
+                );
+
+                return (
+                  <View key={i} style={{ width: "45%" }} wrap={false}>
+                    <Text
+                      style={[
+                        styles.langName,
+                        { fontSize: 10 * PX, marginBottom: 4 * PX },
+                      ]}
+                    >
+                      {l.name}
+                    </Text>
+                    <View>
+                      {renderLevelLine(
+                        labels.langLabels.conversation,
+                        translateLevel(l.conversation),
+                      )}
+                      {renderLevelLine(
+                        labels.langLabels.writing,
+                        translateLevel(l.writing),
+                      )}
+                      {renderLevelLine(
+                        labels.langLabels.reading,
+                        translateLevel(l.reading),
+                      )}
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        )}
+
+        {/* 6. Certificações */}
+        {certifications?.length > 0 && (
+          <View style={{ marginBottom: 10 * PX }}>
+            {renderSectionTitle(labels.certifications)}
+            {certifications.map((c, i) => (
+              <View
+                key={i}
+                style={{
+                  marginBottom: i === certifications.length - 1 ? 0 : 12 * PX,
+                }}
+                wrap={false}
+              >
+                <View style={styles.itemHeader}>
+                  <Text style={[styles.itemTitle, { fontSize: 12 * PX }]}>
+                    {c.name}
+                  </Text>
+                  <Text style={styles.itemDate}>{c.date}</Text>
+                </View>
+                <Text style={styles.company}>{c.issuer}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* 7. Projetos */}
+        {projects?.length > 0 && (
+          <View style={{ marginBottom: 10 * PX }}>
+            {renderSectionTitle(labels.projects)}
+            {projects.map((proj, i) => (
+              <View
+                key={i}
+                style={[
+                  styles.item,
+                  i === projects.length - 1 ? { marginBottom: 0 } : {},
+                ]}
+                wrap={false}
+              >
+                <View style={styles.projectHeader}>
+                  <Text style={[styles.itemTitle, { fontSize: 13 * PX }]}>
+                    {proj.name}
+                  </Text>
+                  <View style={{ flexDirection: "row", gap: 12 * PX }}>
+                    {proj.github && (
+                      <Link style={styles.linkSmall} src={proj.github}>
+                        {labels.repo}
+                      </Link>
+                    )}
+                    {proj.deploy && (
+                      <Link style={styles.linkSmall} src={proj.deploy}>
+                        {labels.demo}
+                      </Link>
+                    )}
+                  </View>
+                </View>
+                {proj.description && (
+                  <Text style={styles.description}>{proj.description}</Text>
                 )}
               </View>
-            </View>
+            ))}
+          </View>
+        )}
 
-            {orderToUse.map((id) => sectionRenderers[id])}
-          </>
+        {/* 8. Voluntariado */}
+        {volunteering?.length > 0 && (
+          <View style={{ marginBottom: 0 }}>
+            {renderSectionTitle(labels.volunteering)}
+            {volunteering.map((v, i) => (
+              <View
+                key={i}
+                style={{
+                  marginBottom: i === volunteering.length - 1 ? 0 : 12 * PX,
+                }}
+                wrap={false}
+              >
+                <View style={styles.itemHeader}>
+                  <Text style={[styles.itemTitle, { fontSize: 13 * PX }]}>
+                    {v.organization}
+                  </Text>
+                  <Text style={styles.itemDate}>{v.role}</Text>
+                </View>
+                {v.description && (
+                  <Text style={styles.description}>{v.description}</Text>
+                )}
+              </View>
+            ))}
+          </View>
         )}
       </Page>
     </Document>
