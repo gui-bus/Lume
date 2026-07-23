@@ -33,7 +33,7 @@ export default function SignUpPage() {
             className="flex items-center gap-4"
           >
             <Image
-              src="/LUME_WHITE.svg"
+              src="/logo_white.svg"
               alt="Lume Logo"
               width={120}
               height={31}
@@ -98,7 +98,7 @@ export default function SignUpPage() {
 
         <div className="lg:hidden absolute top-10 left-12">
           <Image
-            src="/LUME_WHITE.svg"
+            src="/logo_white.svg"
             alt="Lume Logo"
             width={100}
             height={26}
