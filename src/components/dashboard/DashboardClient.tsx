@@ -124,7 +124,8 @@ export function DashboardClient({
   const [coverLetters, setCoverLetters] = useState<any[]>(initialCoverLetters);
   const [search, setSearch] = useState("");
   const [localeFilter, setLocaleFilter] = useState("all");
-  const [tagFilter, setTagFilter] = useState("all");
+  const [resumeTagFilter, setResumeTagFilter] = useState("all");
+  const [coverLetterTagFilter, setCoverLetterTagFilter] = useState("all");
   const [sortBy, setSortBy] = useState<"desc" | "asc">("desc");
   const [isShareOpenParam, setIsShareOpenParam] = useQueryState(
     "share",
@@ -474,7 +475,8 @@ export function DashboardClient({
       const matchesLocale =
         localeFilter === "all" || resume.locale === localeFilter;
       const matchesTag =
-        tagFilter === "all" || resume.tags.some((t) => t.id === tagFilter);
+        resumeTagFilter === "all" ||
+        resume.tags.some((t) => t.id === resumeTagFilter);
       return matchesSearch && matchesLocale && matchesTag;
     })
     .sort((a, b) => {
@@ -483,14 +485,23 @@ export function DashboardClient({
       return sortBy === "desc" ? timeB - timeA : timeA - timeB;
     });
 
-  const filteredCoverLetters = coverLetters.filter((letter) => {
-    const matchesSearch = letter.title
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    const matchesLocale =
-      localeFilter === "all" || letter.locale === localeFilter;
-    return matchesSearch && matchesLocale;
-  });
+  const filteredCoverLetters = coverLetters
+    .filter((letter) => {
+      const matchesSearch = letter.title
+        .toLowerCase()
+        .includes(search.toLowerCase());
+      const matchesLocale =
+        localeFilter === "all" || letter.locale === localeFilter;
+      const matchesTag =
+        coverLetterTagFilter === "all" ||
+        letter.tags.some((t) => t.id === coverLetterTagFilter);
+      return matchesSearch && matchesLocale && matchesTag;
+    })
+    .sort((a, b) => {
+      const timeA = new Date(a.updatedAt).getTime();
+      const timeB = new Date(b.updatedAt).getTime();
+      return sortBy === "desc" ? timeB - timeA : timeA - timeB;
+    });
 
   const handleCreateCoverLetter = async () => {
     try {
@@ -743,8 +754,18 @@ export function DashboardClient({
               <div className="flex items-center gap-2 bg-background/40 px-3 py-1 rounded-xl border border-border/40">
                 <TagIcon className="text-muted-foreground" size={18} />
                 <select
-                  value={tagFilter}
-                  onChange={(e) => setTagFilter(e.target.value)}
+                  value={
+                    activeTab === "resumes"
+                      ? resumeTagFilter
+                      : coverLetterTagFilter
+                  }
+                  onChange={(e) => {
+                    if (activeTab === "resumes") {
+                      setResumeTagFilter(e.target.value);
+                    } else {
+                      setCoverLetterTagFilter(e.target.value);
+                    }
+                  }}
                   className="bg-transparent text-sm w-full outline-none text-foreground font-semibold cursor-pointer"
                 >
                   <option
