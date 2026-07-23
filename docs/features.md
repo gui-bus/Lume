@@ -23,13 +23,10 @@ O Lume é uma aplicação totalmente funcional (Production-Ready) com persistên
 
 ---
 
-### 2. 📄 Engine de Preview e Download de PDF e Modelos de Layout
+### 2. 📄 Engine de Preview e Download de PDF
 
 - **Componentes**: `src/components/pdf/ResumePDF.tsx` e `src/components/preview/ResumeView.tsx`
 - **Capacidades**:
-  - **Múltiplos Templates (Modelos de Layout)**: Permite alternar entre dois modelos através de um seletor visual e rápido integrado na interface:
-    - **Clássico**: Layout tradicional de 1 coluna vertical empilhada.
-    - **Moderno**: Layout de 2 colunas com uma barra lateral compacta contendo contatos, habilidades e idiomas estruturados verticalmente de forma limpa, evitando sobreposição de texto em larguras reduzidas.
   - Preview responsivo em tempo real com suporte a zoom (zoom in / zoom out) e ajuste de layout.
   - Renderização vetorial de PDF executada exclusivamente no navegador via `@react-pdf/renderer` sem sobrecarga no servidor.
   - Seletor de cores temáticas (`colorTheme`) personalizáveis para personalização visual do cabeçalho e títulos do PDF.

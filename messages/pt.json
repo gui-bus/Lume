@@ -20,7 +20,6 @@
       "title": "Currículo",
       "yourName": "Seu Nome",
       "portfolio": "Portfólio",
-      "summary": "Resumo Profissional",
       "experience": "Experiência Profissional",
       "education": "Formação Acadêmica",
       "skills": "Habilidades",
@@ -130,34 +129,13 @@
         "generateLinkDesc": "Compartilhe via URL única",
         "metrics": "Métricas de Acesso",
         "views": "Views",
-        "version": "Lume v1.0",
-        "templates": {
-          "title": "Modelo de Layout",
-          "classic": "Clássico (1 Coluna)",
-          "classicDesc": "Layout tradicional com todas as informações empilhadas verticalmente.",
-          "modern": "Moderno (2 Colunas)",
-          "modernDesc": "Layout moderno de 2 colunas com contatos e habilidades na lateral."
-        }
+        "downloads": "Downloads",
+        "version": "Lume v1.0"
       },
       "auth": {
         "signIn": "Entrar",
         "signUp": "Criar Conta",
         "profile": "Meu Perfil"
-      },
-      "commandPalette": {
-        "placeholder": "Digite um comando ou busque uma seção...",
-        "empty": "Nenhum resultado encontrado.",
-        "navigation": "Navegação",
-        "goDashboard": "Ir para o Dashboard",
-        "editCurrent": "Editar Currículo Atual",
-        "openAts": "Abrir Modo Leitor ATS",
-        "viewMetrics": "Ver Métricas do Currículo",
-        "preferences": "Preferências & Aparência",
-        "toggleTheme": "Alternar Tema (Claro / Escuro)",
-        "changeLang": "Mudar Idioma (Português / English)",
-        "editorActions": "Ações do Editor",
-        "downloadPdf": "Baixar Currículo em PDF",
-        "copyPlainText": "Copiar Texto Puro para Área de Transferência"
       }
     },
     "auth": {
@@ -179,7 +157,6 @@
       }
     },
     "editor": {
-      "printLanguage": "Idioma de Impressão do Currículo",
       "subtitle": "Preencha as informações para gerar seu currículo.",
       "steps": {
         "profile": "Perfil",
@@ -279,73 +256,6 @@
           "current": "Ainda cursando",
           "add": "Adicionar Curso"
         }
-      }
-    },
-    "dashboard": {
-      "title": "Painel de Currículos",
-      "newResume": "Novo Currículo",
-      "searchPlaceholder": "Buscar currículos por título ou conteúdo...",
-      "filterLanguage": "Todos os Idiomas",
-      "langPt": "Português",
-      "langEn": "Inglês",
-      "filterTag": "Todas as Tags",
-      "sortLabel": "Ordenação",
-      "sortDesc": "Mais recentes primeiro",
-      "sortAsc": "Mais antigos primeiro",
-      "views": "Views",
-      "downloads": "Downloads",
-      "lastUpdate": "Atualizado em",
-      "emptyStateTitle": "Nenhum currículo encontrado",
-      "emptyStateDesc": "Comece criando o seu primeiro currículo profissional ou ajuste os filtros de pesquisa.",
-      "emptyStateAction": "Criar Meu Primeiro Currículo",
-      "subtitle": "Gerencie, versione e analise seus currículos profissionais",
-      "statusActive": "Ativo",
-      "requiresCustomLink": "Requer link personalizado",
-      "noTagsLinked": "Nenhuma tag vinculada a este currículo.",
-      "createAndLinkTag": "Criar & Vincular Nova Tag",
-      "tagColorLabel": "Cor da Tag",
-      "completed": "Concluído",
-      "add": "Adicionar",
-      "deleteDialogTitle": "Excluir Currículo",
-      "deleteDialogDesc": "Você tem certeza que deseja excluir permanentemente este currículo? Esta ação não poderá ser desfeita e todas as métricas de visualizações associadas serão perdidas.",
-      "cancel": "Cancelar",
-      "confirmDelete": "Confirmar Exclusão",
-      "resumesCountFound": "{count, plural, =0 {Nenhum currículo encontrado} =1 {1 currículo encontrado} other {# currículos encontrados}}",
-      "actions": {
-        "edit": "Editar",
-        "duplicate": "Duplicar",
-        "delete": "Excluir",
-        "share": "Compartilhar",
-        "analytics": "Métricas",
-        "manageTags": "Gerenciar Tags"
-      },
-      "tags": {
-        "title": "Tags do Currículo",
-        "placeholder": "Adicionar tag (pressione Enter)...",
-        "suggested": "Tags Sugeridas"
-      },
-      "shareSettings": {
-        "title": "Configurações de Compartilhamento",
-        "slugLabel": "Link Personalizado (Slug)",
-        "slugPlaceholder": "ex: joao-silva",
-        "passwordLabel": "Proteger com Senha (Opcional)",
-        "passwordPlaceholder": "Digite uma senha de acesso...",
-        "expiresLabel": "Data de Expiração (Opcional)",
-        "maxViewsLabel": "Limite de Visualizações (Opcional)",
-        "save": "Atualizar Configurações",
-        "success": "Configurações de compartilhamento atualizadas!",
-        "enableQrCode": "Incluir QR Code no PDF"
-      },
-      "toasts": {
-        "createError": "Erro ao criar novo currículo",
-        "duplicateSuccess": "Currículo duplicado com sucesso!",
-        "duplicateError": "Erro ao duplicar o currículo",
-        "deleteSuccess": "Currículo excluído com sucesso!",
-        "deleteError": "Erro ao excluir o currículo",
-        "tagAddSuccess": "Tag adicionada!",
-        "tagAddError": "Erro ao adicionar tag",
-        "tagRemoveSuccess": "Tag removida!",
-        "tagRemoveError": "Erro ao remover tag"
       }
     }
   }

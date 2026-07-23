@@ -1,12 +1,7 @@
 "use client";
 
-import enMessages from "../../../messages/en.json";
-import ptMessages from "../../../messages/pt.json";
-
 import { incrementDownload, saveResume } from "@/app/actions/resumeActions";
-import { useRouter } from "@/i18n/navigation";
 import { ResumeForm } from "@/components/editor/ResumeForm";
-import { SectionOrderManager } from "./SectionOrderManager";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ResumeView } from "@/components/preview/ResumeView";
 import { useTheme } from "@/components/theme-provider";
@@ -52,7 +47,6 @@ import {
   Info,
   LinkedinLogo,
   List,
-  Layout,
   MagnifyingGlassMinus,
   MagnifyingGlassPlus,
   Moon,
@@ -86,55 +80,11 @@ const defaultData: ResumeData = {
   courses: [],
 };
 
-const getResumeLabels = (resumeLocale: string) => {
-  const messages = (resumeLocale === "en" ? enMessages : ptMessages) as any;
-  const resumeTranslations = messages.common.resume;
-  return {
-    locale: resumeLocale,
-    title: resumeTranslations.title,
-    yourName: resumeTranslations.yourName,
-    portfolio: resumeTranslations.portfolio,
-    summary: resumeTranslations.summary,
-    experience: resumeTranslations.experience,
-    education: resumeTranslations.education,
-    skills: resumeTranslations.skills,
-    languages: resumeTranslations.languages,
-    certifications: resumeTranslations.certifications,
-    projects: resumeTranslations.projects,
-    volunteering: resumeTranslations.volunteering,
-    courses: resumeTranslations.courses,
-    current: resumeTranslations.current,
-    at: resumeTranslations.at,
-    repo: resumeTranslations.repo,
-    demo: resumeTranslations.demo,
-    qrCodeLabel:
-      resumeLocale === "en"
-        ? "Access the digital version of my profile"
-        : "Acesse a versão digital do meu perfil",
-    langLabels: {
-      conversation: resumeTranslations.extras.languages.conversation,
-      writing: resumeTranslations.extras.languages.writing,
-      reading: resumeTranslations.extras.languages.reading,
-    },
-    langLevels: {
-      basico: resumeTranslations.extras.languages.levels.basico,
-      intermediario: resumeTranslations.extras.languages.levels.intermediario,
-      avancado: resumeTranslations.extras.languages.levels.avancado,
-      fluente: resumeTranslations.extras.languages.levels.fluente,
-      nativo: resumeTranslations.extras.languages.levels.nativo,
-    },
-  };
-};
-
 interface EditorViewProps {
   initialData?: ResumeData;
   resumeId?: string;
   groupId?: string;
   initialSlug?: string;
-  initialShowQrCode?: boolean;
-  initialResumeLocale?: string;
-  initialSectionsOrder?: string[];
-  initialTemplateId?: string;
 }
 
 export function EditorView({
@@ -142,15 +92,10 @@ export function EditorView({
   resumeId: serverResumeId,
   groupId: serverGroupId,
   initialSlug,
-  initialShowQrCode,
-  initialResumeLocale,
-  initialSectionsOrder,
-  initialTemplateId,
 }: EditorViewProps) {
   const t = useTranslations("common");
   const tResume = useTranslations("common.resume");
   const locale = useLocale();
-  const router = useRouter();
 
   const [data, setData] = useState<ResumeData>(
     initialData
@@ -160,94 +105,7 @@ export function EditorView({
   const [resumeId, setResumeId] = useState<string | undefined>(serverResumeId);
   const [groupId, setGroupId] = useState<string | undefined>(serverGroupId);
   const [slug, setSlug] = useState<string>(initialSlug || "");
-  const [showQrCode] = useState(initialShowQrCode ?? false);
-  const [templateId, setTemplateId] = useState<string>(
-    initialTemplateId || "modern",
-  );
   const [isGenerating, setIsGenerating] = useState(false);
-  const [resumeLocale, setResumeLocale] = useState<string>(
-    initialResumeLocale || locale,
-  );
-  const [qrCodeUrl, setQrCodeUrl] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    if (showQrCode && slug && typeof window !== "undefined") {
-      import("qrcode").then((QRCode) => {
-        QRCode.toDataURL(
-          `${window.location.origin}/${resumeLocale}/share/${slug}`,
-        )
-          .then((url) => setQrCodeUrl(url))
-          .catch((err) => console.error("Error generating QR code:", err));
-      });
-    } else {
-      setQrCodeUrl(undefined);
-    }
-  }, [showQrCode, slug, resumeLocale]);
-
-  const [sectionsOrder, setSectionsOrder] = useState<string[]>(
-    initialSectionsOrder || [
-      "summary",
-      "experiences",
-      "educations",
-      "skills",
-      "projects",
-      "languages",
-      "certifications",
-      "volunteering",
-      "courses",
-      "customSections",
-    ],
-  );
-
-  const handleSectionsOrderChange = async (newOrder: string[]) => {
-    setSectionsOrder(newOrder);
-    if (resumeId) {
-      try {
-        await saveResume(
-          resumeId,
-          data,
-          data.personalInfo.name || undefined,
-          resumeLocale,
-          groupId,
-          slug,
-          templateId,
-          showQrCode,
-          undefined,
-          undefined,
-          undefined,
-          newOrder,
-        );
-      } catch (err) {
-        console.error("Failed to save sections order:", err);
-      }
-    }
-  };
-
-  const handleTemplateIdChange = async (newTemplateId: string) => {
-    setTemplateId(newTemplateId);
-    if (resumeId) {
-      try {
-        await saveResume(
-          resumeId,
-          data,
-          data.personalInfo.name || undefined,
-          resumeLocale,
-          groupId,
-          slug,
-          newTemplateId,
-          showQrCode,
-          undefined,
-          undefined,
-          undefined,
-          sectionsOrder,
-        );
-      } catch (err) {
-        console.error("Failed to save template:", err);
-      }
-    }
-  };
-
-  const resumeLabels = getResumeLabels(resumeLocale);
 
   const handleDownload = async () => {
     if (!data) return;
@@ -258,16 +116,38 @@ export function EditorView({
       const { pdf } = await import("@react-pdf/renderer");
       const { ResumePDF } = await import("@/components/pdf/ResumePDF");
 
-      const labels = resumeLabels;
+      const labels = {
+        title: tResume("title"),
+        yourName: tResume("yourName"),
+        portfolio: tResume("portfolio"),
+        experience: tResume("experience"),
+        education: tResume("education"),
+        skills: tResume("skills"),
+        languages: tResume("languages"),
+        certifications: tResume("certifications"),
+        projects: tResume("projects"),
+        volunteering: tResume("volunteering"),
+        courses: tResume("courses"),
+        current: tResume("current"),
+        at: tResume("at"),
+        repo: tResume("repo"),
+        demo: tResume("demo"),
+        langLabels: {
+          conversation: tResume("extras.languages.conversation"),
+          writing: tResume("extras.languages.writing"),
+          reading: tResume("extras.languages.reading"),
+        },
+        langLevels: {
+          basico: tResume("extras.languages.levels.basico"),
+          intermediario: tResume("extras.languages.levels.intermediario"),
+          avancado: tResume("extras.languages.levels.avancado"),
+          fluente: tResume("extras.languages.levels.fluente"),
+          nativo: tResume("extras.languages.levels.nativo"),
+        },
+      };
 
       const blob = await pdf(
-        <ResumePDF
-          data={data}
-          colorTheme="#18181b"
-          templateId={templateId}
-          labels={labels}
-          sectionsOrder={sectionsOrder}
-        />,
+        <ResumePDF data={data} colorTheme="#18181b" labels={labels} />,
       ).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -319,14 +199,7 @@ export function EditorView({
     setResumeId(serverResumeId);
     setGroupId(serverGroupId);
     setSlug(initialSlug || "");
-    if (initialResumeLocale) setResumeLocale(initialResumeLocale);
-  }, [
-    initialData,
-    serverResumeId,
-    serverGroupId,
-    initialSlug,
-    initialResumeLocale,
-  ]);
+  }, [initialData, serverResumeId, serverGroupId, initialSlug]);
 
   const handleDataChange = useCallback((newData: ResumeData) => {
     setData({ ...newData });
@@ -336,40 +209,6 @@ export function EditorView({
     setResumeId(newId);
     setGroupId(newGroupId);
   }, []);
-
-  const handleResumeLocaleChange = useCallback(
-    async (newLocale: string) => {
-      if (resumeId && data) {
-        try {
-          const result = await saveResume(
-            resumeId,
-            data,
-            data.personalInfo?.name || "Meu Currículo",
-            newLocale,
-            groupId,
-            slug,
-            undefined,
-            showQrCode,
-            undefined,
-            undefined,
-            undefined,
-            sectionsOrder,
-          );
-          toast.success(
-            newLocale === "en"
-              ? "Resume language updated to English"
-              : "Idioma do currículo atualizado para Português",
-          );
-          window.location.href = result.groupId
-            ? `/${newLocale}/?id=${result.groupId}`
-            : `/${newLocale}/`;
-        } catch (err) {
-          console.error("Erro ao salvar idioma do currículo:", err);
-        }
-      }
-    },
-    [resumeId, data, groupId, slug, showQrCode, sectionsOrder],
-  );
 
   const atsResult = useMemo(() => validateATS(data), [data]);
   const spellResult = useMemo(() => checkStrongVerbs(data), [data]);
@@ -511,47 +350,6 @@ export function EditorView({
             Idioma
           </span>
           <LanguageSwitcher />
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-          <Layout size={14} weight="duotone" />{" "}
-          {t("header.tools.templates.title")}
-        </h4>
-        <div className="grid grid-cols-1 gap-3">
-          <button
-            onClick={() => handleTemplateIdChange("classic")}
-            className={cn(
-              "p-4 rounded-2xl border text-left transition-all duration-300 flex flex-col gap-1 w-full",
-              templateId === "classic"
-                ? "border-primary bg-primary/5 shadow-md shadow-primary/5"
-                : "border-border/40 bg-muted/5 hover:bg-muted/20 hover:border-border/80",
-            )}
-          >
-            <span className="text-sm font-bold text-foreground">
-              {t("header.tools.templates.classic")}
-            </span>
-            <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">
-              {t("header.tools.templates.classicDesc")}
-            </span>
-          </button>
-          <button
-            onClick={() => handleTemplateIdChange("modern")}
-            className={cn(
-              "p-4 rounded-2xl border text-left transition-all duration-300 flex flex-col gap-1 w-full",
-              templateId === "modern"
-                ? "border-primary bg-primary/5 shadow-md shadow-primary/5"
-                : "border-border/40 bg-muted/5 hover:bg-muted/20 hover:border-border/80",
-            )}
-          >
-            <span className="text-sm font-bold text-foreground">
-              {t("header.tools.templates.modern")}
-            </span>
-            <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">
-              {t("header.tools.templates.modernDesc")}
-            </span>
-          </button>
         </div>
       </div>
 
@@ -699,9 +497,7 @@ export function EditorView({
     <main className="h-screen flex flex-col lg:flex-row bg-background text-foreground overflow-hidden text-left">
       {/* Header Mobile */}
       <header className="lg:hidden no-print h-14 border-b border-border/40 bg-background/50 backdrop-blur-xl flex items-center justify-between px-4 shrink-0 z-40">
-        <a href={`/${locale}/dashboard`} className="cursor-pointer">
-          <Logo width={80} height={20} />
-        </a>
+        <Logo width={80} height={20} />
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <Dialog>
@@ -825,46 +621,13 @@ export function EditorView({
       </header>
 
       <div className="w-full lg:w-[480px] xl:w-[540px] lg:flex-none flex-1 lg:h-full shrink-0 border-r bg-card/10 overflow-hidden relative flex flex-col text-left">
-        <div className="px-6 py-4 border-b border-border/40 flex items-center justify-between gap-4 shrink-0 bg-background/50">
-          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
-            <Layout size={14} weight="duotone" className="text-primary" />
-            {t("header.tools.templates.title")}
-          </span>
-          <div className="flex bg-muted/40 p-1 rounded-xl border border-border/40 shrink-0">
-            <button
-              onClick={() => handleTemplateIdChange("classic")}
-              className={cn(
-                "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300",
-                templateId === "classic"
-                  ? "bg-background text-primary shadow-sm ring-1 ring-border/20"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {t("header.tools.templates.classic").split(" ")[0]}
-            </button>
-            <button
-              onClick={() => handleTemplateIdChange("modern")}
-              className={cn(
-                "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300",
-                templateId === "modern"
-                  ? "bg-background text-primary shadow-sm ring-1 ring-border/20"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {t("header.tools.templates.modern").split(" ")[0]}
-            </button>
-          </div>
-        </div>
         <ResumeForm
           key={locale}
           initialData={data}
           resumeId={resumeId}
           groupId={groupId}
-          resumeLocale={resumeLocale}
-          onChangeResumeLocale={handleResumeLocaleChange}
           onDataChange={handleDataChange}
           onIdGenerated={handleIdGenerated}
-          sectionsOrder={sectionsOrder}
           downloadButton={
             <div className="lg:hidden w-full px-10 py-4 border-t bg-card/10">
               <Button
@@ -891,9 +654,7 @@ export function EditorView({
 
         <header className="hidden lg:flex no-print h-16 border-b border-border/40 bg-background/50 backdrop-blur-xl items-center justify-between px-8 shrink-0 z-50">
           <div className="flex items-center gap-4">
-            <a href={`/${locale}/dashboard`} className="cursor-pointer">
-              <Logo width={100} height={26} />
-            </a>
+            <Logo width={100} height={26} />
           </div>
 
           <div className="flex items-center gap-2 md:gap-4">
@@ -1063,6 +824,55 @@ export function EditorView({
                     </div>
                   </div>
 
+                  {/* Slug Section */}
+                  <div className="space-y-4">
+                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                      <Browser size={14} weight="duotone" />{" "}
+                      {t("header.tools.visibilityLink")}
+                    </h4>
+                    <div className="space-y-3">
+                      <div className="space-y-2 text-left">
+                        <Label
+                          htmlFor="slug"
+                          className="text-[10px] uppercase font-bold text-muted-foreground ml-1"
+                        >
+                          Custom URL
+                        </Label>
+                        <Input
+                          id="slug"
+                          value={slug}
+                          onChange={(e) =>
+                            setSlug(
+                              e.target.value.toLowerCase().replace(/\s+/g, "-"),
+                            )
+                          }
+                          placeholder="seu-nome"
+                          className="h-12 bg-muted/10 border-border/40 rounded-xl focus:ring-primary/20"
+                        />
+                      </div>
+                      <button
+                        onClick={handleShare}
+                        className="flex items-center gap-4 w-full p-4 rounded-2xl border border-border/40 bg-muted/5 transition-all duration-300 hover:bg-muted/20 hover:border-border/80 group text-left"
+                      >
+                        <div className="w-10 h-10 rounded-xl bg-muted/20 flex items-center justify-center shrink-0 transition-colors group-hover:bg-background">
+                          <ShareNetwork
+                            size={22}
+                            weight="duotone"
+                            className="text-muted-foreground group-hover:text-foreground"
+                          />
+                        </div>
+                        <div className="flex flex-col items-start leading-tight gap-1">
+                          <span className="text-sm font-bold text-foreground">
+                            {t("header.tools.generateLink")}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">
+                            {t("header.tools.generateLinkDesc")}
+                          </span>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
                   {/* Import/Export Section */}
                   <div className="space-y-4">
                     <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
@@ -1118,15 +928,11 @@ export function EditorView({
                     </div>
                   </div>
 
-                  {/* Section Reordering */}
-                  <div className="space-y-4">
-                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                      <List size={14} weight="duotone" /> Reordenar Seções
-                    </h4>
-                    <SectionOrderManager
-                      sectionsOrder={sectionsOrder}
-                      onChange={handleSectionsOrderChange}
-                    />
+                  <div className="pt-8 border-t border-border/20 text-center">
+                    <div className="inline-flex items-center gap-2 text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest">
+                      <Info size={14} weight="duotone" />{" "}
+                      {t("header.tools.version")}
+                    </div>
                   </div>
                 </div>
               </SheetContent>
@@ -1183,14 +989,7 @@ export function EditorView({
               className="origin-top my-8 z-10"
             >
               <div className="w-[210mm] shadow-[0_0_50px_-12px_rgba(0,0,0,0.12)] dark:shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] rounded-sm overflow-hidden bg-white ring-1 ring-black/5 dark:ring-white/10">
-                <ResumeView
-                  data={data}
-                  colorTheme="#18181b"
-                  qrCodeUrl={qrCodeUrl}
-                  labels={resumeLabels}
-                  sectionsOrder={sectionsOrder}
-                  templateId={templateId}
-                />
+                <ResumeView data={data} colorTheme="#18181b" />
               </div>
             </motion.div>
           </div>

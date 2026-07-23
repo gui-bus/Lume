@@ -42,13 +42,6 @@ erDiagram
         json content "JSON estruturado contendo a árvore do ResumeData"
         string locale "Idioma do currículo ('pt', 'en', 'es')"
         string colorTheme "Código Hex da cor temática no PDF (padrão: #18181b)"
-        string templateId "ID do template visual"
-        boolean showQrCode "Status de renderização do QR Code"
-        string passwordHash "Senha de proteção contra acessos"
-        datetime expiresAt "Data limite de expiração (Opcional)"
-        int maxViews "Limite de visualizações (Opcional)"
-        string[] sectionsOrder "Ordem de exibição das seções"
-        string[] tagsOrder "Ordem de exibição das tags"
         int views "Contador incremental de visualizações públicas"
         int downloads "Contador incremental de downloads em PDF"
         string userId FK "ID do usuário proprietário (Chave Estrangeira)"
@@ -76,35 +69,24 @@ datasource db {
 }
 
 model User {
-  id        String   @id
-  email     String   @unique
-  name      String?
-  onboarded Boolean  @default(false)
-  resumes   Resume[]
-  tags      Tag[]
+  id      String   @id
+  email   String   @unique
+  name    String?
+  resumes Resume[]
 }
 
 model Resume {
-  id            String       @id @default(uuid())
-  title         String
-  content       Json
-  locale        String       @default("pt")
-  colorTheme    String       @default("#18181b")
-  templateId    String       @default("modern")
-  showQrCode    Boolean      @default(false)
-  passwordHash  String?
-  expiresAt     DateTime?
-  maxViews      Int?
-  sectionsOrder String[]     @default(["summary", "experiences", "educations", "skills", "projects", "languages", "certifications", "volunteering", "courses"])
-  tagsOrder     String[]     @default([])
-  views         Int          @default(0)
-  downloads     Int          @default(0)
-  userId        String?
-  user          User?        @relation(fields: [userId], references: [id])
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  shareEvents   ShareEvent[]
-  tags          Tag[]
+  id          String   @id @default(uuid())
+  title       String
+  content     Json
+  locale      String   @default("pt")
+  colorTheme  String   @default("#18181b")
+  views       Int      @default(0)
+  downloads   Int      @default(0)
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   groupId String
   slug    String?  @unique

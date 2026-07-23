@@ -1,33 +1,13 @@
 import { z } from "zod";
 
-const httpsUrlRegex = /^https:\/\/[a-zA-Z0-9-\.]+\.[a-z]{2,}(\/\S*)?$/;
-const linkedinRegex =
-  /^https:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+\/?$/;
-const githubRegex = /^https:\/\/(www\.)?github\.com\/[a-zA-Z0-9_-]+\/?$/;
-
 export const PersonalInfoSchema = z.object({
   name: z.string().min(2, "Nome é obrigatório"),
   email: z.string().email("E-mail inválido"),
   phone: z.string().optional(),
   location: z.string().optional(),
-  linkedin: z
-    .string()
-    .regex(linkedinRegex, "LinkedIn deve começar com https://linkedin.com/in/")
-    .optional()
-    .or(z.literal("")),
-  github: z
-    .string()
-    .regex(githubRegex, "GitHub deve começar com https://github.com/")
-    .optional()
-    .or(z.literal("")),
-  website: z
-    .string()
-    .regex(
-      httpsUrlRegex,
-      "URL inválida ou sem HTTPS (deve começar com https://)",
-    )
-    .optional()
-    .or(z.literal("")),
+  linkedin: z.string().url("URL inválida").optional().or(z.literal("")),
+  github: z.string().url("URL inválida").optional().or(z.literal("")),
+  website: z.string().url("URL inválida").optional().or(z.literal("")),
   summary: z.string().optional(),
 });
 
@@ -39,7 +19,6 @@ export const ExperienceSchema = z.object({
   endDate: z.string().optional(),
   current: z.boolean(),
   description: z.string().optional(),
-  featured: z.boolean().optional(),
 });
 
 export const EducationSchema = z.object({
@@ -51,23 +30,10 @@ export const EducationSchema = z.object({
 
 export const ProjectsSchema = z.object({
   name: z.string().min(1, "Nome do projeto é obrigatório"),
-  link: z
-    .string()
-    .regex(httpsUrlRegex, "URL deve começar com https://")
-    .optional()
-    .or(z.literal("")),
-  github: z
-    .string()
-    .regex(httpsUrlRegex, "URL deve começar com https://")
-    .optional()
-    .or(z.literal("")),
-  deploy: z
-    .string()
-    .regex(httpsUrlRegex, "URL deve começar com https://")
-    .optional()
-    .or(z.literal("")),
+  link: z.string().url("URL inválida").optional().or(z.literal("")),
+  github: z.string().url("URL inválida").optional().or(z.literal("")),
+  deploy: z.string().url("URL inválida").optional().or(z.literal("")),
   description: z.string().optional(),
-  featured: z.boolean().optional(),
 });
 
 export const LanguageSchema = z.object({
@@ -105,20 +71,6 @@ export const CourseSchema = z.object({
   current: z.boolean(),
 });
 
-export const CustomSectionItemSchema = z.object({
-  id: z.string(),
-  title: z.string().min(1, "Título do item é obrigatório"),
-  description: z.string().optional(),
-  date: z.string().optional(),
-  featured: z.boolean().optional(),
-});
-
-export const CustomSectionSchema = z.object({
-  id: z.string(),
-  title: z.string().min(1, "Título da seção é obrigatório"),
-  items: z.array(CustomSectionItemSchema),
-});
-
 export const ResumeSchema = z.object({
   personalInfo: PersonalInfoSchema,
   experiences: z.array(ExperienceSchema),
@@ -129,5 +81,4 @@ export const ResumeSchema = z.object({
   certifications: z.array(CertificationSchema),
   volunteering: z.array(VolunteerSchema),
   courses: z.array(CourseSchema),
-  customSections: z.array(CustomSectionSchema).optional(),
 });
