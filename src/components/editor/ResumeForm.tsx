@@ -2,6 +2,7 @@
 
 import { saveResume } from "@/app/actions/resumeActions";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

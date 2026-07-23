@@ -68,6 +68,8 @@ interface SharePageClientProps {
     isExpired?: boolean;
     locale: string;
     qrCodeUrl: string | null;
+    templateId?: string;
+    sectionsOrder?: string[] | null;
   };
   hasViewed: boolean;
   viewedCookieName: string;
@@ -136,7 +138,6 @@ export default function SharePageClient({
           colorTheme={resume.colorTheme || "#18181b"}
           templateId={resume.templateId || undefined}
           labels={labels}
-          qrCodeDataUrl={qrCodeUrl}
           sectionsOrder={resume.sectionsOrder ?? undefined}
         />,
       ).toBlob();

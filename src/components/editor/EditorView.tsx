@@ -266,7 +266,6 @@ export function EditorView({
           colorTheme="#18181b"
           templateId={templateId}
           labels={labels}
-          qrCodeDataUrl={qrCodeUrl}
           sectionsOrder={sectionsOrder}
         />,
       ).toBlob();

@@ -23,6 +23,7 @@ import { UserButton } from "@clerk/nextjs";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTheme } from "@/components/theme-provider";
 import { Logo } from "@/components/ui/Logo";
+import { toast } from "sonner";
 import { Sun, Moon } from "@phosphor-icons/react";
 
 interface AtsAnalysisResult {
@@ -115,7 +116,7 @@ export function AtsReaderClient({
             {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
           </Button>
           <div className="w-px h-6 bg-border/40" />
-          <UserButton afterSignOutUrl={`/${activeLocale}/sign-in`} />
+          <UserButton />
         </div>
       </header>
 

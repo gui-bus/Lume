@@ -16,6 +16,13 @@ import {
   ArrowSquareUpRight,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTheme } from "@/components/theme-provider";
 import { Moon, Sun } from "@phosphor-icons/react";
@@ -50,7 +57,7 @@ export function LandingClient() {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.5, ease: "easeOut" },
+      transition: { duration: 0.5, ease: "easeOut" as any },
     },
   };
 

@@ -83,6 +83,7 @@ interface ResumeCardData {
   groupId: string;
   slug: string | null;
   tags: Tag[];
+  content: any;
 }
 
 interface DashboardClientProps {
@@ -395,7 +396,7 @@ export function DashboardClient({
             {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
           </Button>
           <div className="w-px h-6 bg-border/40" />
-          <UserButton afterSignOutUrl={`/${activeLocale}/sign-in`} />
+          <UserButton />
         </div>
       </header>
 

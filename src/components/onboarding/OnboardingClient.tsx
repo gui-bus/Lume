@@ -88,7 +88,7 @@ export function OnboardingClient({ userId }: OnboardingClientProps) {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.35, ease: "easeOut" },
+      transition: { duration: 0.35, ease: "easeOut" as any },
     },
     exit: { opacity: 0, y: -15, transition: { duration: 0.25 } },
   };
