@@ -17,6 +17,14 @@ A plataforma permite estruturar informações de forma clara, validar currículo
 O projeto está implantado e pronto para uso em produção no seguinte endereço:
 👉 **[https://lume.guibus.dev/](https://lume.guibus.dev/)**
 
+## 📸 Galeria
+
+<img src="./public/preview/01-login.webp" alt="Tela de Login" width="100%" />
+<img src="./public/preview/02-curriculo-modelo-um.webp" alt="Modelo de Currículo Um" width="100%" />
+<img src="./public/preview/03-curriculo-modelo-dois.webp" alt="Modelo de Currículo Dois" width="100%" />
+<img src="./public/preview/04-carta-de-apresentacao.webp" alt="Editor de Carta de Apresentação" width="100%" />
+<img src="./public/preview/05-gerador-de-mensagem-email.webp" alt="Gerador de Mensagem de E-mail" width="100%" />
+
 ## 🛠️ Stack Tecnológica
 
 <div align="center">
